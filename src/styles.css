@@ -448,7 +448,7 @@ img {
 
 .story {
   position: relative;
-  height: 150vh;
+  height: 140vh;
   min-height: 1180px;
   background: var(--navy);
   color: #f7f8fb;

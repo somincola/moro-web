@@ -351,7 +351,6 @@ function StorySection() {
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const staticLayout = window.matchMedia("(max-width: 900px)");
-    let frame = 0;
     let sectionTop = 0;
     let travel = 1;
     let lastProgress = -1;
@@ -375,23 +374,21 @@ function StorySection() {
     };
 
     const update = () => {
-      frame = 0;
       if (reducedMotion.matches || staticLayout.matches) {
         applyProgress(0.5);
         return;
       }
 
-      const next = Math.min(1, Math.max(0, (window.scrollY - sectionTop) / travel));
+      const scrollProgress = (window.scrollY - sectionTop) / travel;
+      const next = Math.min(1, Math.max(0, scrollProgress * 1.2));
       applyProgress(next);
     };
 
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
+    const onScroll = () => update();
 
     const onResize = () => {
       measure();
-      onScroll();
+      update();
     };
 
     measure();
@@ -408,7 +405,6 @@ function StorySection() {
       window.removeEventListener("load", onResize);
       reducedMotion.removeEventListener("change", onResize);
       staticLayout.removeEventListener("change", onResize);
-      if (frame) cancelAnimationFrame(frame);
     };
   }, []);
 
