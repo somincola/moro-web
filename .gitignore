@@ -3,6 +3,8 @@ dist/
 .npm-cache/
 .playwright-cli/
 output/
+.codegraph/
+.cursor/
 .env
 .env.*
 !.env.example

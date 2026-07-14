@@ -465,6 +465,7 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  isolation: isolate;
 }
 
 .story-glow {
@@ -478,16 +479,21 @@ img {
   filter: blur(100px);
   opacity: 0.45;
   pointer-events: none;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .story-conversations,
 .network-story {
   position: relative;
   z-index: 1;
-  transition: opacity 80ms linear, transform 80ms linear;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 .story-conversations {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
   display: grid;
   grid-template-columns: 0.76fr 1.24fr;
   gap: clamp(60px, 8vw, 140px);
@@ -626,6 +632,8 @@ img {
 }
 
 .network-story {
+  opacity: 0.4;
+  transform: translate3d(0, 20.4px, 0);
   margin-top: clamp(56px, 7vh, 88px);
   padding-top: clamp(45px, 6vh, 70px);
   display: grid;

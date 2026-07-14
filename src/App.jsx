@@ -340,42 +340,83 @@ function ConversationCard({ item, index }) {
 
 function StorySection() {
   const sectionRef = useRef(null);
-  const [progress, setProgress] = useState(0);
+  const conversationsRef = useRef(null);
+  const networkRef = useRef(null);
 
   useEffect(() => {
+    const section = sectionRef.current;
+    const conversationsLayer = conversationsRef.current;
+    const networkLayer = networkRef.current;
+    if (!section || !conversationsLayer || !networkLayer) return undefined;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const staticLayout = window.matchMedia("(max-width: 900px)");
     let frame = 0;
+    let sectionTop = 0;
+    let travel = 1;
+    let lastProgress = -1;
+
+    const applyProgress = (progress) => {
+      if (Math.abs(progress - lastProgress) < 0.001) return;
+      lastProgress = progress;
+
+      const conversationOpacity = Math.max(0.3, 1 - progress * 0.9);
+      const networkOpacity = Math.min(1, Math.max(0.4, (progress + 0.08) * 1.35));
+      conversationsLayer.style.opacity = conversationOpacity.toFixed(4);
+      conversationsLayer.style.transform = `translate3d(0, ${(-progress * 34).toFixed(2)}px, 0)`;
+      networkLayer.style.opacity = networkOpacity.toFixed(4);
+      networkLayer.style.transform = `translate3d(0, ${((1 - networkOpacity) * 34).toFixed(2)}px, 0)`;
+    };
+
+    const measure = () => {
+      const rect = section.getBoundingClientRect();
+      sectionTop = window.scrollY + rect.top;
+      travel = Math.max(1, rect.height - window.innerHeight);
+    };
+
     const update = () => {
       frame = 0;
-      if (!sectionRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        setProgress(0.5);
+      if (reducedMotion.matches || staticLayout.matches) {
+        applyProgress(0.5);
         return;
       }
-      const rect = sectionRef.current.getBoundingClientRect();
-      const travel = Math.max(1, rect.height - window.innerHeight);
-      const next = Math.min(1, Math.max(0, -rect.top / travel));
-      setProgress(next);
+
+      const next = Math.min(1, Math.max(0, (window.scrollY - sectionTop) / travel));
+      applyProgress(next);
     };
+
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+
+    measure();
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
+    window.addEventListener("load", onResize, { once: true });
+    reducedMotion.addEventListener("change", onResize);
+    staticLayout.addEventListener("change", onResize);
+
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("load", onResize);
+      reducedMotion.removeEventListener("change", onResize);
+      staticLayout.removeEventListener("change", onResize);
       if (frame) cancelAnimationFrame(frame);
     };
   }, []);
-
-  const conversationOpacity = Math.max(0.3, 1 - progress * 0.9);
-  const networkOpacity = Math.min(1, Math.max(0.4, (progress + 0.08) * 1.35));
 
   return (
     <section className="story" id="features" ref={sectionRef}>
       <div className="story-stage">
         <div className="story-glow" aria-hidden="true" />
-        <div className="story-conversations" style={{ opacity: conversationOpacity, transform: `translateY(${-progress * 34}px)` }}>
+        <div className="story-conversations" ref={conversationsRef}>
           <div className="story-copy">
             <p className="section-kicker">Threads, made readable</p>
             <h2>Conversations<br />without the noise.</h2>
@@ -388,7 +429,7 @@ function StorySection() {
           </div>
         </div>
 
-        <div className="network-story" style={{ opacity: networkOpacity, transform: `translateY(${(1 - networkOpacity) * 34}px)` }}>
+        <div className="network-story" ref={networkRef}>
           <div className="network-copy">
             <p className="section-kicker">Open by design</p>
             <h2>One network.<br />Many homes.</h2>
