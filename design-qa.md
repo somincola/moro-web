@@ -29,7 +29,7 @@ The full-page browser capture cannot reproduce a sticky element at every scroll 
 - **Spacing and layout rhythm:** The implementation preserves the approved sequence: editorial hero, product timeline, dark conversation/network chapter, ivory privacy block, and centered download CTA. Desktop uses the same left-copy/right-product balance; mobile becomes a single column without horizontal overflow.
 - **Colors and visual tokens:** The fixed system uses midnight navy, paper white, warm ivory, mist blue-gray, restrained gold, semantic red, and the icon’s cool blue. No lavender-led theme, theme selector, accent picker, or decorative gradient is present.
 - **Image quality and asset fidelity:** The canonical AppIconClassic source asset is used everywhere. Timeline photography is locally stored at production resolution, cropped with `object-fit`, and credited. No placeholder art, emoji, inline SVG, or generated substitute replaces visible brand/product imagery.
-- **Copy and content:** Marketing posts, accounts, conversations, and server examples are fictional. Privacy copy was updated against the current iOS implementation, including the self-hosted encrypted Web Push → APNs relay and on-device decryption. The site does not invent an App Store URL; an accessible status message appears until `VITE_APP_STORE_URL` is configured.
+- **Copy and content:** Marketing posts, accounts, conversations, and server examples are fictional. Privacy copy was updated against the current iOS implementation, including the self-hosted encrypted Web Push → APNs relay and on-device decryption. App Store badges use the permanent Apple ID `6776115614`, with `VITE_APP_STORE_URL` retained as an optional deployment override.
 - **Icons:** Phosphor icons provide a consistent lightweight outline family. Active heart/bookmark states and the app-preview tab selection are visually and semantically distinct.
 - **Accessibility:** Semantic headings, landmarks, tab roles, button labels, alt text, focus-visible outlines, reduced-motion handling, and practical mobile tap targets are present. The tested accessibility tree exposes selected/pressed states correctly.
 
@@ -38,7 +38,7 @@ The full-page browser capture cannot reproduce a sticky element at every scroll 
 - Mobile navigation opens and closes; Features, Privacy, Support, and App Store controls are reachable.
 - Following, Local, and Federated preview tabs switch content.
 - Like and bookmark controls update their visible count/state and `aria-pressed` values.
-- Missing App Store configuration produces a truthful `role=status` notice instead of a false destination.
+- App Store badges expose direct, accessible links to Moro's permanent listing in every route.
 - `/privacy`, `/terms`, and `/support` load directly with correct document titles and no console errors.
 - Browser console checks returned 0 errors and 0 warnings on the home, privacy, terms, and support routes.
 
@@ -62,7 +62,7 @@ No actionable P0, P1, or P2 issues remain.
 
 ## Follow-up polish
 
-- P3: replace the temporary App Store notice with the live listing URL through `VITE_APP_STORE_URL` when the App Store page is public.
+- P3 resolved: App Store badges now link directly to Apple ID `6776115614`, and Safari can surface the matching Smart App Banner.
 - P3: have counsel review the migrated policy and terms before production publication.
 
 ## Implementation checklist

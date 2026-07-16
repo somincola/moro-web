@@ -104,7 +104,7 @@ img {
   gap: 38px;
 }
 
-.primary-nav > a {
+.primary-nav > a:not(.store-badge) {
   position: relative;
   padding: 12px 0;
   text-decoration: none;
@@ -112,7 +112,7 @@ img {
   font-weight: 560;
 }
 
-.primary-nav > a::after {
+.primary-nav > a:not(.store-badge)::after {
   content: "";
   position: absolute;
   left: 0;
@@ -123,7 +123,7 @@ img {
   transition: right 180ms ease;
 }
 
-.primary-nav > a:hover::after {
+.primary-nav > a:not(.store-badge):hover::after {
   right: 0;
 }
 
@@ -147,6 +147,7 @@ img {
   border: 0;
   border-radius: 13px;
   background: #071d41;
+  text-decoration: none;
   cursor: pointer;
   box-shadow: 0 14px 32px rgba(3, 26, 59, 0.18);
   transition: transform 180ms ease, box-shadow 180ms ease;
@@ -839,16 +840,10 @@ img {
   line-height: 1;
 }
 
-.download > p:not(.section-kicker):not(.store-notice) {
+.download > p:not(.section-kicker) {
   margin: 13px 0 27px;
   color: var(--ink-soft);
   font-size: 16px;
-}
-
-.store-notice {
-  margin: 17px 0 0;
-  color: #53627a;
-  font-size: 13px;
 }
 
 .site-footer {
@@ -1213,11 +1208,11 @@ img {
     display: flex;
   }
 
-  .primary-nav > a {
+  .primary-nav > a:not(.store-badge) {
     padding: 12px 10px;
   }
 
-  .primary-nav > a::after {
+  .primary-nav > a:not(.store-badge)::after {
     display: none;
   }
 

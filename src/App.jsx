@@ -25,7 +25,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 
-const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim();
+const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim() || "https://apps.apple.com/app/id6776115614";
 
 const timelineByTab = {
   Following: [
@@ -177,15 +177,21 @@ function setPageMetadata(title, description) {
   if (meta) meta.setAttribute("content", description);
 }
 
-function StoreBadge({ compact = false, onClick }) {
+function StoreBadge({ compact = false }) {
   return (
-    <button className={`store-badge ${compact ? "store-badge--compact" : ""}`} onClick={onClick} type="button">
+    <a
+      className={`store-badge ${compact ? "store-badge--compact" : ""}`}
+      href={APP_STORE_URL}
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Download Moro on the App Store"
+    >
       <img src="/assets/download-on-app-store.png" alt="Download on the App Store" />
-    </button>
+    </a>
   );
 }
 
-function Header({ onStoreClick }) {
+function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -208,7 +214,7 @@ function Header({ onStoreClick }) {
         <a href="/#features" onClick={() => setMenuOpen(false)}>Features</a>
         <a href="/privacy" onClick={() => setMenuOpen(false)}>Privacy</a>
         <a href="/support" onClick={() => setMenuOpen(false)}>Support</a>
-        <StoreBadge compact onClick={onStoreClick} />
+        <StoreBadge compact />
       </nav>
     </header>
   );
@@ -299,7 +305,7 @@ function AppPreview() {
       <nav className="app-tab-bar" aria-label="Moro app preview navigation">
         <button className="is-selected" type="button" aria-label="Home"><House size={23} weight="fill" /></button>
         <button type="button" aria-label="Search"><MagnifyingGlass size={24} /></button>
-        <button type="button" aria-label="Compose"><PencilSimpleLine size={24} /></button>
+        <button type="button" aria-label="Post"><PencilSimpleLine size={24} /></button>
         <button type="button" aria-label="Notifications"><Bell size={24} /></button>
         <button type="button" aria-label="Profile"><UserCircle size={25} /></button>
       </nav>
@@ -307,14 +313,14 @@ function AppPreview() {
   );
 }
 
-function Hero({ onStoreClick }) {
+function Hero() {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
         <p className="eyebrow"><GlobeHemisphereWest size={18} /> Built for the open social web</p>
         <h1 id="hero-title">A calmer home<br />for the fediverse.</h1>
         <p className="hero-lede">Read, connect, and share across the open social web.</p>
-        <StoreBadge onClick={onStoreClick} />
+        <StoreBadge />
         <p className="server-note"><CheckCircle size={18} weight="fill" /> Works with any Mastodon server</p>
       </div>
       <div className="hero-preview-wrap">
@@ -480,15 +486,14 @@ function PrivacySection() {
   );
 }
 
-function DownloadSection({ onStoreClick, storeNotice }) {
+function DownloadSection() {
   return (
     <section className="download" id="download" aria-labelledby="download-title">
       <img className="download-icon" src="/assets/moro-app-icon.png" alt="" />
       <p className="section-kicker">Moro for iOS</p>
       <h2 id="download-title">Get Moro for iPhone</h2>
       <p>A calm, open, and respectful way to experience the fediverse.</p>
-      <StoreBadge onClick={onStoreClick} />
-      {storeNotice ? <p className="store-notice" role="status">The App Store link will appear here as soon as Moro is available.</p> : null}
+      <StoreBadge />
     </section>
   );
 }
@@ -519,30 +524,30 @@ function Footer({ includeCredits = false }) {
   );
 }
 
-function HomePage({ onStoreClick, storeNotice }) {
+function HomePage() {
   useEffect(() => {
     setPageMetadata("Moro — A calmer home for the fediverse", "Moro is a calm, privacy-respecting Mastodon client for iPhone.");
   }, []);
 
   return (
     <>
-      <Header onStoreClick={onStoreClick} />
+      <Header />
       <main>
-        <Hero onStoreClick={onStoreClick} />
+        <Hero />
         <StorySection />
         <PrivacySection />
-        <DownloadSection onStoreClick={onStoreClick} storeNotice={storeNotice} />
+        <DownloadSection />
       </main>
       <Footer includeCredits />
     </>
   );
 }
 
-function LegalLayout({ title, description, updated, children, onStoreClick }) {
+function LegalLayout({ title, description, updated, children }) {
   useEffect(() => setPageMetadata(`${title} — Moro`, description), [title, description]);
   return (
     <>
-      <Header onStoreClick={onStoreClick} />
+      <Header />
       <main className="document-shell">
         <article className="legal-document">
           <p className="section-kicker">Moro · somincola llc</p>
@@ -556,9 +561,9 @@ function LegalLayout({ title, description, updated, children, onStoreClick }) {
   );
 }
 
-function PrivacyPage({ onStoreClick }) {
+function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy" description="Privacy policy for Moro, a Mastodon client for iPhone." updated="July 14, 2026" onStoreClick={onStoreClick}>
+    <LegalLayout title="Privacy Policy" description="Privacy policy for Moro, a Mastodon client for iPhone." updated="July 16, 2026">
       <p>Moro (“the App”) is a third-party client for Mastodon and the fediverse, developed by <strong>somincola llc</strong> (“we”, “us”, “our”). This policy explains what information the App handles and where it goes.</p>
 
       <h2>The short version</h2>
@@ -573,7 +578,7 @@ function PrivacyPage({ onStoreClick }) {
       <h3>Stored on your device</h3>
       <ul>
         <li>Access tokens and session credentials for the server accounts you add, stored in the iOS Keychain.</li>
-        <li>Local caches, drafts, preferences, and downloaded media used to operate the App.</li>
+        <li>Local caches, preferences, and downloaded media used to operate the App.</li>
         <li>Web Push encryption keys used to decrypt notification content on your device.</li>
       </ul>
 
@@ -593,7 +598,7 @@ function PrivacyPage({ onStoreClick }) {
       <h2>Data retention and your choices</h2>
       <ul>
         <li>Log out or remove an account to delete its credentials from the App.</li>
-        <li>Delete local drafts and cached content from the App where controls are available.</li>
+        <li>Clear cached content from the App where controls are available.</li>
         <li>Disable notifications in iOS Settings.</li>
         <li>Uninstall Moro to remove its local app data from your device.</li>
       </ul>
@@ -610,9 +615,9 @@ function PrivacyPage({ onStoreClick }) {
   );
 }
 
-function TermsPage({ onStoreClick }) {
+function TermsPage() {
   return (
-    <LegalLayout title="Terms of Use" description="Terms of use for Moro, a Mastodon client for iPhone." updated="July 14, 2026" onStoreClick={onStoreClick}>
+    <LegalLayout title="Terms of Use" description="Terms of use for Moro, a Mastodon client for iPhone." updated="July 14, 2026">
       <p>These Terms of Use (“Terms”) govern your use of <strong>Moro</strong> (“the App”), a third-party client for Mastodon and the fediverse developed by <strong>somincola llc</strong> (“we”, “us”, “our”). By downloading or using Moro, you agree to these Terms. The App is also subject to <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">Apple’s Standard End User License Agreement</a>.</p>
 
       <h2>License</h2>
@@ -645,7 +650,7 @@ function TermsPage({ onStoreClick }) {
   );
 }
 
-function SupportPage({ onStoreClick }) {
+function SupportPage() {
   useEffect(() => setPageMetadata("Support — Moro", "Support, privacy, and legal information for Moro."), []);
   const links = [
     { icon: EnvelopeSimple, title: "Contact support", copy: "We’ll help with accounts, notifications, or unexpected behaviour.", href: "mailto:support@somincola.com", label: "support@somincola.com" },
@@ -654,7 +659,7 @@ function SupportPage({ onStoreClick }) {
   ];
   return (
     <>
-      <Header onStoreClick={onStoreClick} />
+      <Header />
       <main className="support-shell">
         <section className="support-intro">
           <div className="support-icon"><img src="/assets/moro-app-icon.png" alt="Moro app icon" /></div>
@@ -677,11 +682,11 @@ function SupportPage({ onStoreClick }) {
   );
 }
 
-function NotFoundPage({ onStoreClick }) {
+function NotFoundPage() {
   useEffect(() => setPageMetadata("Page not found — Moro", "The requested Moro page could not be found."), []);
   return (
     <>
-      <Header onStoreClick={onStoreClick} />
+      <Header />
       <main className="not-found"><img src="/assets/moro-app-icon.png" alt="" /><p className="section-kicker">404</p><h1>This page wandered off.</h1><p>Let’s take you back to a calmer part of the fediverse.</p><a className="primary-link" href="/">Return home <ArrowRight size={18} /></a></main>
       <Footer />
     </>
@@ -693,20 +698,9 @@ export function App() {
     const clean = window.location.pathname.replace(/\/+$/, "");
     return clean || "/";
   }, []);
-  const [storeNotice, setStoreNotice] = useState(false);
-
-  const handleStoreClick = () => {
-    if (APP_STORE_URL) {
-      window.open(APP_STORE_URL, "_blank", "noopener,noreferrer");
-      return;
-    }
-    setStoreNotice(true);
-    if (path === "/") document.querySelector("#download")?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-
-  if (path === "/") return <HomePage onStoreClick={handleStoreClick} storeNotice={storeNotice} />;
-  if (path === "/privacy") return <PrivacyPage onStoreClick={handleStoreClick} />;
-  if (path === "/terms") return <TermsPage onStoreClick={handleStoreClick} />;
-  if (path === "/support") return <SupportPage onStoreClick={handleStoreClick} />;
-  return <NotFoundPage onStoreClick={handleStoreClick} />;
+  if (path === "/") return <HomePage />;
+  if (path === "/privacy") return <PrivacyPage />;
+  if (path === "/terms") return <TermsPage />;
+  if (path === "/support") return <SupportPage />;
+  return <NotFoundPage />;
 }

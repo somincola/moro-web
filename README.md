@@ -25,13 +25,13 @@ The production bundle is emitted to `dist/`.
 
 ## App Store URL
 
-Copy `.env.example` to `.env` and set the live App Store listing when it is available:
+The production site links to Moro's permanent App Store listing by default:
 
 ```bash
-VITE_APP_STORE_URL=https://apps.apple.com/app/idYOUR_APP_ID
+https://apps.apple.com/app/id6776115614
 ```
 
-Until this value exists, App Store buttons show a truthful availability notice instead of opening a placeholder listing.
+Set `VITE_APP_STORE_URL` only when a deployment needs to override that destination, such as for a regional storefront or pre-release environment.
 
 ## Cloudflare Pages
 
@@ -41,7 +41,7 @@ Use a dedicated Pages project for this repository so the app site can deploy ind
 - Build command: `pnpm build`
 - Build output directory: `dist`
 - Production branch: `main`
-- Environment variable: `VITE_APP_STORE_URL` when the listing is live
+- Optional environment override: `VITE_APP_STORE_URL`
 - Custom domain: `moro.somincola.com`
 
 The `somincola.com` zone can continue serving the company website while the `moro` subdomain points at this separate Pages project. The Mastodon server and its web identity remain under `somincola.org`.
