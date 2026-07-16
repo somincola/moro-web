@@ -175,13 +175,13 @@ img {
 
 .hero {
   width: min(100% - 64px, 1320px);
-  min-height: 835px;
+  min-height: 840px;
   margin: 0 auto;
-  padding: 42px 0 84px;
+  padding: 28px 0 52px;
   display: grid;
-  grid-template-columns: minmax(510px, 1.02fr) minmax(560px, 0.98fr);
+  grid-template-columns: minmax(520px, 1fr) minmax(430px, 480px);
   align-items: center;
-  gap: clamp(48px, 4.5vw, 72px);
+  gap: clamp(56px, 5.5vw, 88px);
 }
 
 .hero-copy {
@@ -250,28 +250,39 @@ img {
 .hero-preview-wrap {
   position: relative;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .preview-halo {
   position: absolute;
-  inset: 15% -4% 12% 18%;
-  border-radius: 48%;
+  inset: 12% -6% 8% 8%;
+  border-radius: 44%;
   background: #efe8dc;
   filter: blur(42px);
-  opacity: 0.8;
+  opacity: 0.76;
 }
 
 .app-preview {
   position: relative;
   z-index: 1;
-  width: min(100%, 574px);
-  height: 760px;
+  width: min(100%, 456px);
+  height: auto;
+  aspect-ratio: 9 / 16;
   overflow: hidden;
   border: 1px solid rgba(146, 155, 169, 0.3);
-  border-radius: 22px;
+  border-radius: 40px;
   background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 32px 70px rgba(33, 43, 56, 0.16), 0 3px 9px rgba(33, 43, 56, 0.08);
+  box-shadow: 0 38px 82px rgba(33, 43, 56, 0.17), 0 8px 22px rgba(33, 43, 56, 0.09);
+}
+
+.app-preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  pointer-events: none;
 }
 
 .feed-tabs {
@@ -370,7 +381,7 @@ img {
 
 .post-media {
   width: calc(100% - 54px);
-  height: 139px;
+  height: 158px;
   margin: 10px 0 0 54px;
   border-radius: 12px;
   object-fit: cover;
@@ -1136,20 +1147,16 @@ img {
 
 @media (max-width: 1120px) {
   .hero {
-    grid-template-columns: minmax(350px, 0.83fr) minmax(470px, 1.17fr);
-    gap: 42px;
+    grid-template-columns: minmax(350px, 1fr) minmax(360px, 440px);
+    gap: 36px;
   }
 
   .hero h1 {
     font-size: clamp(58px, 6.7vw, 78px);
   }
 
-  .app-preview {
-    height: 720px;
-  }
-
   .post-media {
-    height: 126px;
+    height: 150px;
   }
 
   .privacy-feature {
@@ -1254,12 +1261,11 @@ img {
   }
 
   .app-preview {
-    width: min(100%, 570px);
-    height: 745px;
+    width: min(100%, 456px);
   }
 
   .post-media {
-    height: 134px;
+    height: 150px;
   }
 
   .story {
@@ -1345,8 +1351,7 @@ img {
   }
 
   .app-preview {
-    height: 690px;
-    border-radius: 18px;
+    border-radius: 28px;
   }
 
   .feed-tabs {
@@ -1387,7 +1392,7 @@ img {
   }
 
   .post-media {
-    height: 118px;
+    height: 124px;
   }
 
   .story-stage {
