@@ -265,9 +265,9 @@ img {
 .app-preview {
   position: relative;
   z-index: 1;
-  width: min(100%, 456px);
+  width: min(100%, 420px);
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 9 / 19.5;
   overflow: hidden;
   border: 1px solid rgba(146, 155, 169, 0.3);
   border-radius: 40px;
@@ -1261,7 +1261,7 @@ img {
   }
 
   .app-preview {
-    width: min(100%, 456px);
+    width: min(100%, 420px);
   }
 
   .post-media {

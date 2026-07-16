@@ -11,5 +11,5 @@ When implementing from a selected generated mock, treat that image as the source
 - Use `public/assets/moro-app-icon.png` as the canonical brand mark. The previous full-body cream elephant is retired.
 - Keep one fixed visual system: midnight navy, warm ivory, paper white, mist blue-gray, and restrained semantic red/blue. Do not add a theme or accent-color picker and do not return to lavender-led branding.
 - Marketing timelines must use fictional accounts, posts, servers, and conversations. Landscape media may use locally stored, appropriately licensed photography with source credits.
-- Keep the hero product preview tall and phone-like (approximately 9:16). Avoid wide, short, tablet-like proportions that make the first screen feel heavy.
+- Keep the hero product preview at the modern iPhone portrait ratio (19.5:9). Let `aspect-ratio` calculate its height from a responsive width; avoid fixed-height or 9:16 treatments that make it feel tablet-like.
 - The approved visual target is `/Users/nagihsu/.codex/generated_images/019f5e3b-396b-79f0-888d-14330df6feda/exec-0bd40e7f-0580-49f7-9630-1028a6fb268b.png`.
