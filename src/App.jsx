@@ -493,7 +493,33 @@ function DownloadSection() {
       <p className="section-kicker">Moro for iOS</p>
       <h2 id="download-title">Get Moro for iPhone</h2>
       <p>A calm, open, and respectful way to experience the fediverse.</p>
-      <StoreBadge />
+      <div className="download-card">
+        <div className="download-card-copy">
+          <p className="download-card-label">Available on the App Store</p>
+          <h3>Bring the fediverse with you.</h3>
+          <p>Open the App Store directly, or scan the code with your iPhone camera.</p>
+          <StoreBadge />
+        </div>
+        <a
+          className="download-qr"
+          href={APP_STORE_URL}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Scan or open the QR code to download Moro on the App Store"
+        >
+          <span className="download-qr-frame">
+            <img src="/assets/app-qrcode.png" alt="QR code for Moro on the App Store" />
+          </span>
+          <span className="download-qr-copy">
+            <strong>Scan to download</strong>
+            <small>Open with your iPhone camera</small>
+          </span>
+        </a>
+      </div>
+      <div className="download-region-note" role="note">
+        <span aria-hidden="true" />
+        Moro is not currently available on the App Store in mainland China.
+      </div>
     </section>
   );
 }
