@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { partytownVite } from "@qwik.dev/partytown/utils";
 
 export default defineConfig({
   optimizeDeps: {
@@ -12,5 +13,5 @@ export default defineConfig({
       clientFiles: ["./src/main.jsx"],
     },
   },
-  plugins: [react()],
+  plugins: [react(), partytownVite()],
 });

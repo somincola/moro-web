@@ -1023,7 +1023,17 @@ img {
   font-size: 13px;
 }
 
-.footer-main nav a:hover {
+.footer-main nav button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.footer-main nav a:hover,
+.footer-main nav button:hover {
   color: var(--ink);
 }
 
@@ -1051,6 +1061,73 @@ img {
 .photo-credits a {
   color: var(--ink);
   text-underline-offset: 3px;
+}
+
+.analytics-consent {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  left: 24px;
+  z-index: 100;
+  width: min(calc(100% - 48px), 760px);
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  border: 1px solid #d6dce4;
+  border-radius: 18px;
+  background: rgba(255, 253, 250, 0.98);
+  box-shadow: 0 24px 60px rgba(3, 26, 59, 0.2);
+  backdrop-filter: blur(18px);
+}
+
+.analytics-consent h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: -0.025em;
+}
+
+.analytics-consent p {
+  max-width: 510px;
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.analytics-consent a {
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+.analytics-consent-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 9px;
+}
+
+.analytics-consent-actions button {
+  min-height: 42px;
+  padding: 0 17px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.analytics-consent-decline {
+  border: 1px solid #cfd5dd;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.analytics-consent-accept {
+  border: 1px solid var(--navy);
+  background: var(--navy);
+  color: #fff;
 }
 
 .document-shell {
@@ -1305,6 +1382,25 @@ img {
 }
 
 @media (max-width: 900px) {
+  .analytics-consent {
+    right: 14px;
+    bottom: 14px;
+    left: 14px;
+    width: calc(100% - 28px);
+    padding: 20px;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .analytics-consent-actions {
+    flex-direction: column;
+  }
+
+  .analytics-consent-actions button {
+    width: 100%;
+  }
+
   .site-header {
     width: min(100% - 36px, 720px);
     min-height: 78px;
@@ -1355,6 +1451,12 @@ img {
   .primary-nav .store-badge {
     width: 170px;
     margin: 8px 10px 4px;
+  }
+
+  .footer-main nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 12px;
   }
 
   .hero {

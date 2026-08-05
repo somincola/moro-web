@@ -24,6 +24,12 @@ import {
   UsersThree,
   X,
 } from "@phosphor-icons/react";
+import {
+  ANALYTICS_EVENTS,
+  ANALYTICS_PREFERENCES_EVENT,
+  hasAnalyticsConsent,
+  trackEvent,
+} from "./analytics.js";
 
 const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim() || "https://apps.apple.com/app/id6776115614";
 
@@ -177,7 +183,7 @@ function setPageMetadata(title, description) {
   if (meta) meta.setAttribute("content", description);
 }
 
-function StoreBadge({ compact = false }) {
+function StoreBadge({ compact = false, location }) {
   return (
     <a
       className={`store-badge ${compact ? "store-badge--compact" : ""}`}
@@ -185,6 +191,10 @@ function StoreBadge({ compact = false }) {
       target="_blank"
       rel="noreferrer"
       aria-label="Download Moro on the App Store"
+      onClick={() => trackEvent(ANALYTICS_EVENTS.appStoreClick, {
+        cta_location: location,
+        link_url: APP_STORE_URL,
+      })}
     >
       <img src="/assets/download-on-app-store.png" alt="Download on the App Store" />
     </a>
@@ -214,7 +224,7 @@ function Header() {
         <a href="/#features" onClick={() => setMenuOpen(false)}>Features</a>
         <a href="/privacy" onClick={() => setMenuOpen(false)}>Privacy</a>
         <a href="/support" onClick={() => setMenuOpen(false)}>Support</a>
-        <StoreBadge compact />
+        <StoreBadge compact location="header" />
       </nav>
     </header>
   );
@@ -320,7 +330,7 @@ function Hero() {
         <p className="eyebrow"><GlobeHemisphereWest size={18} /> Built for the open social web</p>
         <h1 id="hero-title">A calmer home<br />for the fediverse.</h1>
         <p className="hero-lede">Read, connect, and share across the open social web.</p>
-        <StoreBadge />
+        <StoreBadge location="hero" />
         <p className="server-note"><CheckCircle size={18} weight="fill" /> Works with any Mastodon server</p>
       </div>
       <div className="hero-preview-wrap">
@@ -487,8 +497,24 @@ function PrivacySection() {
 }
 
 function DownloadSection() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || !hasAnalyticsConsent()) return undefined;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      trackEvent(ANALYTICS_EVENTS.downloadSectionView, { section_id: "download" });
+      observer.disconnect();
+    }, { threshold: 0.5 });
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="download" id="download" aria-labelledby="download-title">
+    <section className="download" id="download" ref={sectionRef} aria-labelledby="download-title">
       <img className="download-icon" src="/assets/moro-app-icon.png" alt="" />
       <p className="section-kicker">Moro for iOS</p>
       <h2 id="download-title">Get Moro for iPhone</h2>
@@ -498,7 +524,7 @@ function DownloadSection() {
           <p className="download-card-label">Available on the App Store</p>
           <h3>Bring the fediverse with you.</h3>
           <p>Open the App Store directly, or scan the code with your iPhone camera.</p>
-          <StoreBadge />
+          <StoreBadge location="download_card" />
         </div>
         <a
           className="download-qr"
@@ -506,6 +532,10 @@ function DownloadSection() {
           target="_blank"
           rel="noreferrer"
           aria-label="Scan or open the QR code to download Moro on the App Store"
+          onClick={() => trackEvent(ANALYTICS_EVENTS.appStoreClick, {
+            cta_location: "download_qr",
+            link_url: APP_STORE_URL,
+          })}
         >
           <span className="download-qr-frame">
             <img src="/assets/app-qrcode.png" alt="QR code for Moro on the App Store" />
@@ -533,6 +563,12 @@ function Footer({ includeCredits = false }) {
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
           <a href="/support">Support</a>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event(ANALYTICS_PREFERENCES_EVENT))}
+          >
+            Analytics preferences
+          </button>
         </nav>
         <p>© 2026 somincola llc</p>
       </div>
@@ -589,7 +625,7 @@ function LegalLayout({ title, description, updated, children }) {
 
 function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy" description="Privacy policy for Moro, a Mastodon client for iPhone." updated="July 16, 2026">
+    <LegalLayout title="Privacy Policy" description="Privacy policy for Moro, a Mastodon client for iPhone." updated="August 5, 2026">
       <p>Moro (“the App”) is a third-party client for Mastodon and the fediverse, developed by <strong>somincola llc</strong> (“we”, “us”, “our”). This policy explains what information the App handles and where it goes.</p>
 
       <h2>The short version</h2>
@@ -617,6 +653,10 @@ function PrivacyPage() {
 
       <h2>Data we do not collect for tracking</h2>
       <p>Moro does not use third-party advertising SDKs, does not track you across apps or websites, and does not collect data for advertising profiles. The current App Privacy manifest declares no tracked domains and no data types collected by the App developer.</p>
+
+      <h2>Website analytics</h2>
+      <p>This public marketing website uses Google Analytics only after you explicitly allow it. We measure page visits, views of the download section, App Store link clicks, and support contact clicks. Website analytics are not connected to your Mastodon account or activity in the Moro app.</p>
+      <p>When analytics is enabled, Google receives technical information such as the page URL and IP address. Advertising storage, advertising user data, and ad personalization remain disabled. You can change your choice through “Analytics preferences” in the footer.</p>
 
       <h2>In-app purchases</h2>
       <p>If Moro offers optional purchases or tips, Apple processes payment. We do not receive or store your full payment-card details.</p>
@@ -679,7 +719,7 @@ function TermsPage() {
 function SupportPage() {
   useEffect(() => setPageMetadata("Support — Moro", "Support, privacy, and legal information for Moro."), []);
   const links = [
-    { icon: EnvelopeSimple, title: "Contact support", copy: "We’ll help with accounts, notifications, or unexpected behaviour.", href: "mailto:support@somincola.com", label: "support@somincola.com" },
+    { icon: EnvelopeSimple, title: "Contact support", copy: "We’ll help with accounts, notifications, or unexpected behaviour.", href: "mailto:support@somincola.com", label: "support@somincola.com", analyticsEvent: ANALYTICS_EVENTS.supportContactClick },
     { icon: ShieldCheck, title: "Privacy policy", copy: "See what Moro handles on-device, through your server, and for push notifications.", href: "/privacy", label: "Read privacy policy" },
     { icon: FileText, title: "Terms of use", copy: "Understand the terms that apply when you download and use Moro.", href: "/terms", label: "Read terms" },
   ];
@@ -694,8 +734,16 @@ function SupportPage() {
           <p>Tell us what happened, which server you use, and your Moro version. Please never email your password or access token.</p>
         </section>
         <section className="support-grid" aria-label="Support options">
-          {links.map(({ icon: Icon, title, copy, href, label }) => (
-            <a className="support-card" href={href} key={title}>
+          {links.map(({ icon: Icon, title, copy, href, label, analyticsEvent }) => (
+            <a
+              className="support-card"
+              href={href}
+              key={title}
+              onClick={() => analyticsEvent && trackEvent(analyticsEvent, {
+                cta_location: "support_card",
+                link_url: href,
+              })}
+            >
               <span className="support-card-icon"><Icon size={28} /></span>
               <div><h2>{title}</h2><p>{copy}</p><span className="support-card-link">{label} <ArrowRight size={17} /></span></div>
             </a>
