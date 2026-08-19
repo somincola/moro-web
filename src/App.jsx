@@ -1,15 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowBendUpLeft,
   ArrowRight,
+  ArrowSquareOut,
+  ArrowsLeftRight,
   ArrowsClockwise,
   Bell,
   BookmarkSimple,
   Buildings,
+  Bug,
+  CalendarBlank,
   CheckCircle,
+  Database,
+  DeviceMobile,
   DotsThree,
   EnvelopeSimple,
   FileText,
+  FingerprintSimple,
   GlobeHemisphereWest,
   Heart,
   House,
@@ -17,8 +24,10 @@ import {
   LockKey,
   MagnifyingGlass,
   MegaphoneSimple,
+  Package,
   PaperPlaneTilt,
   PencilSimpleLine,
+  Pulse,
   ShieldCheck,
   UserCircle,
   UsersThree,
@@ -32,6 +41,15 @@ import {
 } from "./analytics.js";
 
 const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim() || "https://apps.apple.com/app/id6776115614";
+const SITE_URL = "https://moro.somincola.com";
+const SECURITY_REPORT_URL = "mailto:support@somincola.com?subject=Moro%20security%20report";
+
+const trustNavigation = [
+  { href: "/transparency", label: "Transparency" },
+  { href: "/security", label: "Security" },
+  { href: "/releases", label: "Releases" },
+  { href: "/licenses", label: "Licenses" },
+];
 
 const timelineByTab = {
   Following: [
@@ -181,6 +199,20 @@ function setPageMetadata(title, description) {
   document.title = title;
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute("content", description);
+
+  const canonicalURL = new URL(window.location.pathname, SITE_URL).toString();
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.setAttribute("href", canonicalURL);
+
+  const metadata = [
+    ['meta[property="og:title"]', "content", title],
+    ['meta[property="og:description"]', "content", description],
+    ['meta[property="og:url"]', "content", canonicalURL],
+  ];
+  metadata.forEach(([selector, attribute, value]) => {
+    const element = document.querySelector(selector);
+    if (element) element.setAttribute(attribute, value);
+  });
 }
 
 function StoreBadge({ compact = false, location }) {
@@ -223,6 +255,7 @@ function Header() {
       <nav id="primary-navigation" className={menuOpen ? "primary-nav primary-nav--open" : "primary-nav"}>
         <a href="/#features" onClick={() => setMenuOpen(false)}>Features</a>
         <a href="/privacy" onClick={() => setMenuOpen(false)}>Privacy</a>
+        <a href="/transparency" onClick={() => setMenuOpen(false)}>Trust center</a>
         <a href="/support" onClick={() => setMenuOpen(false)}>Support</a>
         <StoreBadge compact location="header" />
       </nav>
@@ -561,6 +594,10 @@ function Footer({ includeCredits = false }) {
         <a className="footer-brand" href="/"><img src="/assets/moro-app-icon.png" alt="" /><span>Moro</span></a>
         <nav aria-label="Footer navigation">
           <a href="/privacy">Privacy</a>
+          <a href="/security">Security</a>
+          <a href="/transparency">Transparency</a>
+          <a href="/releases">Releases</a>
+          <a href="/licenses">Licenses</a>
           <a href="/terms">Terms</a>
           <a href="/support">Support</a>
           <button
@@ -625,21 +662,23 @@ function LegalLayout({ title, description, updated, children }) {
 
 function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy" description="Privacy policy for Moro, a Mastodon client for iPhone." updated="August 5, 2026">
+    <LegalLayout title="Privacy Policy" description="Privacy policy for Moro, a Mastodon client for iPhone." updated="August 19, 2026">
       <p>Moro (“the App”) is a third-party client for Mastodon and the fediverse, developed by <strong>somincola llc</strong> (“we”, “us”, “our”). This policy explains what information the App handles and where it goes.</p>
+      <p>For a plain-language view of each service boundary, see the <a href="/transparency">Moro transparency page</a>.</p>
 
       <h2>The short version</h2>
       <ul>
         <li>Your account, posts, messages, follows, and media are exchanged directly between the App and the Mastodon server you choose.</li>
-        <li>Your access tokens are stored on your device in the iOS Keychain.</li>
+        <li>Your access tokens are stored in the iOS Keychain and marked to remain on this device.</li>
         <li>Moro does not include advertising or cross-app tracking, and we do not sell your data.</li>
         <li>If you enable push notifications, our self-hosted relay forwards encrypted notification payloads to Apple Push Notification service (APNs). Decryption happens on your device.</li>
+        <li>If you choose to share diagnostics with app developers in iOS, Apple may provide us with crash and performance reports.</li>
       </ul>
 
       <h2>Information the App handles</h2>
       <h3>Stored on your device</h3>
       <ul>
-        <li>Access tokens and session credentials for the server accounts you add, stored in the iOS Keychain.</li>
+        <li>Access tokens and session credentials for the server accounts you add, stored in the iOS Keychain with a this-device-only accessibility setting.</li>
         <li>Local caches, preferences, and downloaded media used to operate the App.</li>
         <li>Web Push encryption keys used to decrypt notification content on your device.</li>
       </ul>
@@ -652,7 +691,10 @@ function PrivacyPage() {
       <p>The relay receives the encrypted Web Push payload from your Mastodon server and forwards that ciphertext to APNs. Moro’s notification extension decrypts the content on your device. Apple processes device and delivery information under Apple’s own privacy terms. Disabling notifications stops new push delivery; removing an account removes its subscription from the App’s active configuration.</p>
 
       <h2>Data we do not collect for tracking</h2>
-      <p>Moro does not use third-party advertising SDKs, does not track you across apps or websites, and does not collect data for advertising profiles. The current App Privacy manifest declares no tracked domains and no data types collected by the App developer.</p>
+      <p>Moro does not use third-party advertising, behavioural analytics, or crash-reporting SDKs in the App. We do not track you across apps or websites and do not build advertising profiles. The current App Privacy manifest declares no tracked domains and no data types collected by the App developer.</p>
+
+      <h2>Diagnostics provided by Apple</h2>
+      <p>If you enable “Share With App Developers” in iOS analytics settings, Apple may provide us with crash logs, performance diagnostics, and related device or operating-system information. We use those reports only to investigate reliability problems. They are not connected to your Mastodon posts, messages, or access token by Moro.</p>
 
       <h2>Website analytics</h2>
       <p>This public marketing website uses Google Analytics only after you explicitly allow it. We measure page visits, views of the download section, App Store link clicks, and support contact clicks. Website analytics are not connected to your Mastodon account or activity in the Moro app.</p>
@@ -663,7 +705,7 @@ function PrivacyPage() {
 
       <h2>Data retention and your choices</h2>
       <ul>
-        <li>Log out or remove an account to delete its credentials from the App.</li>
+        <li>Remove an account to delete its stored access token and session credentials from the App’s Keychain records.</li>
         <li>Clear cached content from the App where controls are available.</li>
         <li>Disable notifications in iOS Settings.</li>
         <li>Uninstall Moro to remove its local app data from your device.</li>
@@ -673,7 +715,7 @@ function PrivacyPage() {
       <p>Moro is not directed to children. You must meet the minimum age required by your region and by the Mastodon server you use.</p>
 
       <h2>Changes to this policy</h2>
-      <p>We may update this policy as Moro changes. Material changes will be published here with a revised date.</p>
+      <p>We may update this policy as Moro changes. Material changes will be published here with a revised date and reflected in the public website repository history.</p>
 
       <h2>Contact</h2>
       <p><strong>somincola llc</strong><br /><a href="mailto:privacy@somincola.com">privacy@somincola.com</a></p>
@@ -716,11 +758,322 @@ function TermsPage() {
   );
 }
 
+function TrustNavigation({ activePath }) {
+  return (
+    <nav className="trust-navigation" aria-label="Trust center sections">
+      {trustNavigation.map((item) => (
+        <a
+          href={item.href}
+          key={item.href}
+          aria-current={activePath === item.href ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+function TrustLayout({ icon: Icon, title, description, updated, children }) {
+  useEffect(() => setPageMetadata(`${title} — Moro`, description), [title, description]);
+  const activePath = window.location.pathname.replace(/\/+$/, "") || "/";
+
+  return (
+    <>
+      <Header />
+      <main className="trust-shell">
+        <header className="trust-hero">
+          <div className="trust-hero-icon" aria-hidden="true">
+            <Icon size={38} weight="duotone" />
+          </div>
+          <p className="section-kicker">Moro trust center</p>
+          <h1>{title}</h1>
+          <p className="trust-intro">{description}</p>
+          <p className="trust-updated">Last reviewed: {updated}</p>
+          <TrustNavigation activePath={activePath} />
+        </header>
+        <div className="trust-content">{children}</div>
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+function DataFlow({ label, summary, steps, bidirectional = false }) {
+  return (
+    <article className="data-flow">
+      <header>
+        <p>{label}</p>
+        <h2>{summary}</h2>
+      </header>
+      <div className={`data-flow-chain ${steps.length > 3 ? "data-flow-chain--long" : ""}`}>
+        {steps.map(({ icon: Icon, title, copy }, index) => (
+          <Fragment key={title}>
+            <div className="data-endpoint">
+              <span aria-hidden="true"><Icon size={25} weight="duotone" /></span>
+              <strong>{title}</strong>
+              <small>{copy}</small>
+            </div>
+            {index < steps.length - 1 ? (
+              <span className="data-connector" aria-hidden="true">
+                {bidirectional && index === 0
+                  ? <ArrowsLeftRight size={23} />
+                  : <ArrowRight size={23} />}
+              </span>
+            ) : null}
+          </Fragment>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function TransparencyPage() {
+  const facts = [
+    { icon: LockKey, title: "Tokens stay in Keychain", copy: "Account credentials use a this-device-only iOS Keychain setting." },
+    { icon: ShieldCheck, title: "No advertising profile", copy: "The App has no advertising SDK and does not perform cross-app tracking." },
+    { icon: Database, title: "Your server holds the social data", copy: "Posts, follows, messages, and media are handled by the Mastodon server you choose." },
+    { icon: FileText, title: "Public policy history", copy: "These trust pages and their changes are visible in the public website repository." },
+  ];
+
+  return (
+    <TrustLayout
+      icon={FingerprintSimple}
+      title="Where your data goes"
+      description="Moro is a client, not a social network. These are the paths your information can take when you use the App or this website."
+      updated="August 19, 2026"
+    >
+      <section className="trust-fact-grid" aria-label="Privacy facts">
+        {facts.map(({ icon: Icon, title, copy }) => (
+          <article key={title}>
+            <Icon size={27} weight="duotone" />
+            <h2>{title}</h2>
+            <p>{copy}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="trust-section-heading" aria-labelledby="data-paths-title">
+        <p className="section-kicker">Data paths</p>
+        <h2 id="data-paths-title">Three boundaries, plainly drawn.</h2>
+        <p>Each path has a specific purpose. Website analytics never receives your Mastodon account activity.</p>
+      </section>
+
+      <div className="data-flow-list">
+        <DataFlow
+          label="Reading and posting"
+          summary="The App talks directly to your chosen server."
+          bidirectional
+          steps={[
+            { icon: DeviceMobile, title: "Your iPhone", copy: "Moro and its local Keychain" },
+            { icon: Buildings, title: "Your Mastodon server", copy: "Account, posts, media, and social graph" },
+          ]}
+        />
+        <DataFlow
+          label="Optional push notifications"
+          summary="Notification content remains encrypted until it reaches your device."
+          steps={[
+            { icon: Buildings, title: "Your server", copy: "Creates an encrypted Web Push payload" },
+            { icon: FingerprintSimple, title: "Ciphertext", copy: "Content is encrypted for your device keys" },
+            { icon: GlobeHemisphereWest, title: "Moro relay", copy: "Forwards the encrypted payload" },
+            { icon: Bell, title: "Apple Push service", copy: "Delivers the notification" },
+            { icon: DeviceMobile, title: "Your iPhone", copy: "Decrypts and displays the content" },
+          ]}
+        />
+        <DataFlow
+          label="This website"
+          summary="Analytics stays off until you allow it."
+          steps={[
+            { icon: House, title: "Moro website", copy: "Marketing, support, and trust pages" },
+            { icon: CheckCircle, title: "Your choice", copy: "Allow or decline optional analytics" },
+            { icon: Pulse, title: "Google Analytics", copy: "Page and link events only after consent" },
+          ]}
+        />
+      </div>
+
+      <section className="trust-panel trust-source-panel">
+        <div>
+          <p className="section-kicker">Source availability</p>
+          <h2>Private product code, public trust record.</h2>
+          <p>The Moro iOS application source is private and proprietary. The website repository, policy changes, security contact, and release information are public so the commitments on these pages have a visible history.</p>
+        </div>
+        <a className="trust-text-link" href="https://github.com/somincola/moro-web" target="_blank" rel="noreferrer">
+          View website history <ArrowSquareOut size={18} />
+        </a>
+      </section>
+    </TrustLayout>
+  );
+}
+
+function SecurityPage() {
+  return (
+    <TrustLayout
+      icon={ShieldCheck}
+      title="Security"
+      description="Report a security problem privately so we can investigate it without putting other Moro users at risk."
+      updated="August 19, 2026"
+    >
+      <section className="security-report-card">
+        <div className="security-report-icon" aria-hidden="true"><Bug size={31} weight="duotone" /></div>
+        <div>
+          <p className="section-kicker">Private reporting</p>
+          <h2>Found a vulnerability?</h2>
+          <p>Email the report instead of opening a public issue. Never include a real password or access token.</p>
+        </div>
+        <a className="trust-button" href={SECURITY_REPORT_URL}>
+          Email a private report <EnvelopeSimple size={18} />
+        </a>
+      </section>
+
+      <div className="trust-two-column">
+        <section className="trust-panel">
+          <p className="section-kicker">Supported release</p>
+          <h2>Moro 1.0.1</h2>
+          <p className="trust-version-line"><span>Build 10</span><span>iOS 18 or later</span></p>
+          <p>Security fixes are delivered through the latest version available from the App Store. Reports about a newer test build are also welcome when you identify the build number.</p>
+          <a className="trust-text-link" href="/releases">Review release status <ArrowRight size={18} /></a>
+        </section>
+
+        <section className="trust-panel">
+          <p className="section-kicker">In scope</p>
+          <h2>What to report</h2>
+          <ul>
+            <li>The Moro iOS app and its extensions.</li>
+            <li>The encrypted push relay operated for Moro.</li>
+            <li>This website and its consent controls.</li>
+          </ul>
+          <p>Please do not test accounts, Mastodon servers, or Apple services that you do not own or have permission to assess.</p>
+        </section>
+      </div>
+
+      <section className="trust-panel report-checklist">
+        <div>
+          <p className="section-kicker">A useful report</p>
+          <h2>Help us reproduce it safely.</h2>
+        </div>
+        <ul>
+          <li><CheckCircle size={20} weight="fill" /> Moro version and build number</li>
+          <li><CheckCircle size={20} weight="fill" /> iOS version and device model</li>
+          <li><CheckCircle size={20} weight="fill" /> Reproduction steps using test data</li>
+          <li><CheckCircle size={20} weight="fill" /> Expected impact and any suggested mitigation</li>
+        </ul>
+      </section>
+
+      <section className="trust-section-heading response-heading">
+        <p className="section-kicker">Coordinated response</p>
+        <h2>What happens after you report.</h2>
+      </section>
+      <ol className="response-steps">
+        <li><strong>Acknowledgement</strong><span>We aim to acknowledge a complete report within three business days.</span></li>
+        <li><strong>Triage</strong><span>We verify scope and impact, then keep the reporter informed as the investigation progresses.</span></li>
+        <li><strong>Resolution</strong><span>We coordinate a fix and public notice when disclosure helps users update safely.</span></li>
+      </ol>
+    </TrustLayout>
+  );
+}
+
+function ReleasesPage() {
+  return (
+    <TrustLayout
+      icon={CalendarBlank}
+      title="Release status"
+      description="The version marked Available here is the version Apple is publicly distributing, not a private development build."
+      updated="August 19, 2026"
+    >
+      <section className="release-card">
+        <div className="release-card-heading">
+          <div>
+            <span className="release-status"><CheckCircle size={17} weight="fill" /> Available on the App Store</span>
+            <h2>Moro 1.0.1</h2>
+            <p>Build 10 · Released August 11, 2026 · Requires iOS 18 or later</p>
+          </div>
+          <a className="trust-button" href={APP_STORE_URL} target="_blank" rel="noreferrer">
+            Open App Store <ArrowSquareOut size={18} />
+          </a>
+        </div>
+        <div className="release-highlights">
+          <h3>Highlights</h3>
+          <ul>
+            <li>Unified navigation, page surfaces, headers, and the primary tab bar.</li>
+            <li>Improved notifications, messages, Settings, and follower lists.</li>
+            <li>Enhanced post, media, hashtag, profile, and Explore rendering.</li>
+            <li>Refined keyboard and emoji switching in the composer.</li>
+            <li>Fixed localisation, layout, state, and stability issues.</li>
+          </ul>
+        </div>
+      </section>
+
+      <div className="trust-two-column release-notes-grid">
+        <section className="trust-panel">
+          <p className="section-kicker">Status rule</p>
+          <h2>Public means downloadable.</h2>
+          <p>The private development repository can contain a newer version number. This page changes the public status only after Apple’s public App Store data shows that release.</p>
+        </section>
+        <section className="trust-panel">
+          <p className="section-kicker">Verification</p>
+          <h2>Public checks</h2>
+          <ul>
+            <li>The App Store lists version 1.0.1 as available.</li>
+            <li>The listing reports an August 11, 2026 release date and an iOS 18 minimum.</li>
+            <li>Public version data was last checked on August 19, 2026.</li>
+          </ul>
+        </section>
+      </div>
+    </TrustLayout>
+  );
+}
+
+function LicensesPage() {
+  const components = [
+    { name: "SDWebImage", version: "5.21.6", area: "Moro for iOS", license: "MIT", href: "https://github.com/SDWebImage/SDWebImage/blob/5.21.6/LICENSE" },
+    { name: "React and React DOM", version: "19.2.0", area: "Moro website", license: "MIT", href: "https://github.com/facebook/react/blob/v19.2.0/LICENSE" },
+    { name: "Phosphor Icons", version: "2.1.10", area: "Moro website", license: "MIT", href: "https://github.com/phosphor-icons/react/blob/v2.1.10/LICENSE" },
+    { name: "Partytown", version: "0.14.0", area: "Optional website analytics", license: "MIT", href: "https://github.com/QwikDev/partytown/blob/main/LICENSE" },
+    { name: "Inter", version: "5.2.8 package", area: "Website typography", license: "SIL OFL 1.1", href: "https://github.com/rsms/inter/blob/master/LICENSE.txt" },
+    { name: "Newsreader", version: "5.2.10 package", area: "Website typography", license: "SIL OFL 1.1", href: "https://github.com/productiontype/Newsreader/blob/master/OFL.txt" },
+    { name: "Vite React plugin", version: "5.0.4", area: "Website build tooling", license: "MIT", href: "https://github.com/vitejs/vite-plugin-react/blob/plugin-react%405.0.4/LICENSE" },
+    { name: "Vite", version: "6.4.3", area: "Website build tooling", license: "MIT", href: "https://github.com/vitejs/vite/blob/v6.4.3/LICENSE" },
+  ];
+
+  return (
+    <TrustLayout
+      icon={Package}
+      title="Third-party software"
+      description="Moro keeps its own source private while respecting the separate licenses of the software and fonts it uses."
+      updated="August 19, 2026"
+    >
+      <section className="trust-panel license-intro">
+        <p className="section-kicker">Licensing boundary</p>
+        <h2>Publicly visible does not mean open source.</h2>
+        <p>The Moro application and original website code and content are proprietary unless a file says otherwise. Public visibility of the website repository provides transparency; third-party components remain available under their own licenses.</p>
+      </section>
+
+      <section className="license-list" aria-label="Direct third-party components">
+        {components.map((component) => (
+          <article key={component.name}>
+            <div>
+              <p>{component.area}</p>
+              <h2>{component.name}</h2>
+              <span>{component.version}</span>
+            </div>
+            <a href={component.href} target="_blank" rel="noreferrer">
+              {component.license} <ArrowSquareOut size={16} />
+            </a>
+          </article>
+        ))}
+      </section>
+
+      <p className="license-note">This page lists direct product and website dependencies. Transitive dependencies and platform frameworks may carry additional notices in their distributions.</p>
+    </TrustLayout>
+  );
+}
+
 function SupportPage() {
   useEffect(() => setPageMetadata("Support — Moro", "Support, privacy, and legal information for Moro."), []);
   const links = [
     { icon: EnvelopeSimple, title: "Contact support", copy: "We’ll help with accounts, notifications, or unexpected behaviour.", href: "mailto:support@somincola.com", label: "support@somincola.com", analyticsEvent: ANALYTICS_EVENTS.supportContactClick },
     { icon: ShieldCheck, title: "Privacy policy", copy: "See what Moro handles on-device, through your server, and for push notifications.", href: "/privacy", label: "Read privacy policy" },
+    { icon: Bug, title: "Security reports", copy: "Report a vulnerability privately and review the currently supported release.", href: "/security", label: "Review security policy" },
     { icon: FileText, title: "Terms of use", copy: "Understand the terms that apply when you download and use Moro.", href: "/terms", label: "Read terms" },
   ];
   return (
@@ -776,5 +1129,9 @@ export function App() {
   if (path === "/privacy") return <PrivacyPage />;
   if (path === "/terms") return <TermsPage />;
   if (path === "/support") return <SupportPage />;
+  if (path === "/transparency") return <TransparencyPage />;
+  if (path === "/security") return <SecurityPage />;
+  if (path === "/releases") return <ReleasesPage />;
+  if (path === "/licenses") return <LicensesPage />;
   return <NotFoundPage />;
 }

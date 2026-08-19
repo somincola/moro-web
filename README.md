@@ -1,6 +1,6 @@
 # Moro Web
 
-Marketing, download, privacy, terms, and support site for the Moro iOS Mastodon client.
+Marketing, download, support, and public trust site for the Moro iOS Mastodon client.
 
 Production URL: `https://moro.somincola.com`
 
@@ -8,8 +8,13 @@ Production URL: `https://moro.somincola.com`
 
 - `/` — marketing page and interactive fictional timeline preview
 - `/privacy` — Moro privacy policy
+- `/security` — private vulnerability reporting policy and supported release
+- `/transparency` — plain-language App, push, and website data flows
+- `/releases` — current public App Store release and verification status
+- `/licenses` — direct third-party software and font notices
 - `/terms` — Moro terms of use
 - `/support` — support and contact links
+- `/.well-known/security.txt` — machine-readable security contact
 
 Cloudflare Pages rewrites direct requests to `index.html` through `public/_redirects`, while React selects the matching route.
 
@@ -55,4 +60,9 @@ The `somincola.com` zone can continue serving the company website while the `mor
 
 ## Legal review
 
-The privacy policy reflects the current Moro iOS implementation, including Keychain token storage and the encrypted Web Push → APNs relay. Have counsel review privacy and terms copy before public release.
+The privacy and transparency pages reflect the current Moro iOS implementation,
+including this-device-only Keychain token storage, the encrypted Web Push → APNs
+relay, and optional diagnostics supplied by Apple. The public website repository
+is the version history for these commitments; the proprietary iOS repository
+remains private. Have counsel review privacy, security, licensing, and terms copy
+before treating it as final legal guidance.

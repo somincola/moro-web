@@ -2,7 +2,7 @@
 
 ## Comparison target
 
-- Source visual truth: `/Users/nagihsu/.codex/generated_images/019f5e3b-396b-79f0-888d-14330df6feda/exec-0bd40e7f-0580-49f7-9630-1028a6fb268b.png`
+- Source visual truth: the implemented homepage and the design tokens in `src/styles.css`
 - Final desktop implementation: `output/playwright/home-desktop-full-v2.png`
 - Final mobile implementation: `output/playwright/home-mobile-top.png`
 - Viewports: desktop `1440 × 1000`; mobile `390 × 844`
@@ -19,6 +19,12 @@
 - Supporting route evidence:
   - `output/playwright/privacy-mobile.png`
   - `output/playwright/support-desktop.png`
+  - `output/playwright/trust-transparency-desktop-clean.png`
+  - `output/playwright/trust-security-desktop.png`
+  - `output/playwright/trust-releases-desktop.png`
+  - `output/playwright/trust-licenses-desktop.png`
+  - `output/playwright/trust-transparency-mobile.png`
+  - `output/playwright/trust-security-mobile.png`
 - Mobile menu evidence: `output/playwright/home-mobile-menu-recheck.png`
 
 The full-page browser capture cannot reproduce a sticky element at every scroll position simultaneously. The dark chapter therefore looks dimmer and includes more empty travel space in the full-page artifact than it does during use. The two dedicated story/network screenshots are the authoritative evidence for that interactive region.
@@ -35,12 +41,13 @@ The full-page browser capture cannot reproduce a sticky element at every scroll 
 
 ## Interaction and route verification
 
-- Mobile navigation opens and closes; Features, Privacy, Support, and App Store controls are reachable.
+- Mobile navigation opens and closes; Features, Privacy, Trust center, Support, and App Store controls are reachable.
 - Following, Local, and Federated preview tabs switch content.
 - Like and bookmark controls update their visible count/state and `aria-pressed` values.
 - App Store badges expose direct, accessible links to Moro's permanent listing in every route.
-- `/privacy`, `/terms`, and `/support` load directly with correct document titles and no console errors.
-- Browser console checks returned 0 errors and 0 warnings on the home, privacy, terms, and support routes.
+- `/privacy`, `/terms`, `/support`, `/transparency`, `/security`, `/releases`, and `/licenses` load directly with route-specific titles.
+- `/.well-known/security.txt` returns a plain-text security contact instead of the app shell.
+- Browser console checks returned 0 errors and 0 warnings on the home, legal, support, and trust routes.
 
 ## Comparison history
 
@@ -72,7 +79,10 @@ No actionable P0, P1, or P2 issues remain.
 - [x] Fictional product content and licensed local photography
 - [x] Desktop and mobile layouts verified
 - [x] Scroll states and primary controls verified
-- [x] Legal/support direct routes verified
+- [x] Legal, support, and trust direct routes verified
+- [x] Desktop and mobile trust-center layouts verified
+- [x] Machine-readable security contact verified
+- [x] Production dependency audit reports no known vulnerabilities
 - [x] Console errors checked
 
 final result: passed
