@@ -1738,6 +1738,13 @@ img {
   line-height: 1.55;
 }
 
+.release-highlights > p {
+  margin: 0;
+  color: #d7dee8;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
 .release-notes-grid {
   margin-top: 18px;
 }

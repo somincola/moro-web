@@ -39,10 +39,33 @@ import {
   hasAnalyticsConsent,
   trackEvent,
 } from "./analytics.js";
+import appStoreRelease from "./data/app-store-release.json";
 
-const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim() || "https://apps.apple.com/app/id6776115614";
+const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim() || appStoreRelease.appStoreUrl;
 const SITE_URL = "https://moro.somincola.com";
 const SECURITY_REPORT_URL = "mailto:support@somincola.com?subject=Moro%20security%20report";
+
+const releaseDateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function formatReleaseDate(value) {
+  return releaseDateFormatter.format(new Date(value));
+}
+
+function formatOSVersion(value) {
+  const components = String(value).split(".");
+  while (components.length > 1 && components.at(-1) === "0") components.pop();
+  return components.join(".");
+}
+
+const publicReleaseName = `Moro ${appStoreRelease.version}`;
+const publicReleaseDate = formatReleaseDate(appStoreRelease.releaseDate);
+const publicReleaseSyncDate = formatReleaseDate(appStoreRelease.syncedAt);
+const publicReleaseMinimumOS = `iOS ${formatOSVersion(appStoreRelease.minimumOsVersion)} or later`;
 
 const trustNavigation = [
   { href: "/transparency", label: "Transparency" },
@@ -774,7 +797,7 @@ function TrustNavigation({ activePath }) {
   );
 }
 
-function TrustLayout({ icon: Icon, title, description, updated, children }) {
+function TrustLayout({ icon: Icon, title, description, updated, updatedLabel = "Last reviewed", children }) {
   useEffect(() => setPageMetadata(`${title} — Moro`, description), [title, description]);
   const activePath = window.location.pathname.replace(/\/+$/, "") || "/";
 
@@ -789,7 +812,7 @@ function TrustLayout({ icon: Icon, title, description, updated, children }) {
           <p className="section-kicker">Moro trust center</p>
           <h1>{title}</h1>
           <p className="trust-intro">{description}</p>
-          <p className="trust-updated">Last reviewed: {updated}</p>
+          <p className="trust-updated">{updatedLabel}: {updated}</p>
           <TrustNavigation activePath={activePath} />
         </header>
         <div className="trust-content">{children}</div>
@@ -928,8 +951,8 @@ function SecurityPage() {
       <div className="trust-two-column">
         <section className="trust-panel">
           <p className="section-kicker">Supported release</p>
-          <h2>Moro 1.0.1</h2>
-          <p className="trust-version-line"><span>Build 10</span><span>iOS 18 or later</span></p>
+          <h2>{publicReleaseName}</h2>
+          <p className="trust-version-line"><span>{publicReleaseMinimumOS}</span></p>
           <p>Security fixes are delivered through the latest version available from the App Store. Reports about a newer test build are also welcome when you identify the build number.</p>
           <a className="trust-text-link" href="/releases">Review release status <ArrowRight size={18} /></a>
         </section>
@@ -978,14 +1001,15 @@ function ReleasesPage() {
       icon={CalendarBlank}
       title="Release status"
       description="The version marked Available here is the version Apple is publicly distributing, not a private development build."
-      updated="August 19, 2026"
+      updated={publicReleaseSyncDate}
+      updatedLabel="Last synced from Apple"
     >
       <section className="release-card">
         <div className="release-card-heading">
           <div>
             <span className="release-status"><CheckCircle size={17} weight="fill" /> Available on the App Store</span>
-            <h2>Moro 1.0.1</h2>
-            <p>Build 10 · Released August 11, 2026 · Requires iOS 18 or later</p>
+            <h2>{publicReleaseName}</h2>
+            <p>Released {publicReleaseDate} · Requires {publicReleaseMinimumOS}</p>
           </div>
           <a className="trust-button" href={APP_STORE_URL} target="_blank" rel="noreferrer">
             Open App Store <ArrowSquareOut size={18} />
@@ -993,13 +1017,13 @@ function ReleasesPage() {
         </div>
         <div className="release-highlights">
           <h3>Highlights</h3>
-          <ul>
-            <li>Unified navigation, page surfaces, headers, and the primary tab bar.</li>
-            <li>Improved notifications, messages, Settings, and follower lists.</li>
-            <li>Enhanced post, media, hashtag, profile, and Explore rendering.</li>
-            <li>Refined keyboard and emoji switching in the composer.</li>
-            <li>Fixed localisation, layout, state, and stability issues.</li>
-          </ul>
+          {appStoreRelease.releaseNotes.length > 0 ? (
+            <ul>
+              {appStoreRelease.releaseNotes.map((note) => <li key={note}>{note}</li>)}
+            </ul>
+          ) : (
+            <p>Apple has not published update notes for this release.</p>
+          )}
         </div>
       </section>
 
@@ -1013,9 +1037,9 @@ function ReleasesPage() {
           <p className="section-kicker">Verification</p>
           <h2>Public checks</h2>
           <ul>
-            <li>The App Store lists version 1.0.1 as available.</li>
-            <li>The listing reports an August 11, 2026 release date and an iOS 18 minimum.</li>
-            <li>Public version data was last checked on August 19, 2026.</li>
+            <li>The App Store lists version {appStoreRelease.version} as available.</li>
+            <li>The listing reports {publicReleaseDate} as the release date and iOS {formatOSVersion(appStoreRelease.minimumOsVersion)} as the minimum version.</li>
+            <li>Release data was synchronized from Apple on {publicReleaseSyncDate}.</li>
           </ul>
         </section>
       </div>

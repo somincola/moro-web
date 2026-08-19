@@ -24,6 +24,8 @@ Cloudflare Pages rewrites direct requests to `index.html` through `public/_redir
 pnpm install
 pnpm dev
 pnpm build
+pnpm sync:release
+pnpm test:release-sync
 ```
 
 The production bundle is emitted to `dist/`.
@@ -37,6 +39,35 @@ https://apps.apple.com/app/id6776115614
 ```
 
 Set `VITE_APP_STORE_URL` only when a deployment needs to override that destination, such as for a regional storefront or pre-release environment.
+
+## Automatic App Store release data
+
+The version, public release date, minimum iOS version, and update notes shown on
+`/security` and `/releases` come from the committed
+`src/data/app-store-release.json` snapshot.
+
+`pnpm sync:release` requests Apple's public lookup endpoint for App Store ID
+`6776115614`, validates both the ID and `com.somincola.moro` bundle identifier,
+normalizes the update notes, and rewrites the snapshot only when public release
+content changes. A failed or unexpected Apple response stops the update and
+leaves the last verified snapshot intact.
+
+`.github/workflows/sync-app-store-release.yml` runs every six hours and can also
+be started manually. When Apple exposes a new public release, the workflow:
+
+1. updates the release snapshot;
+2. runs the release-sync tests and production build;
+3. commits only the generated JSON to `main` as `github-actions[bot]`;
+4. lets the existing Cloudflare Pages Git integration deploy that commit.
+
+The workflow requires `contents: write` for its `GITHUB_TOKEN`. No App Store
+Connect key or other repository secret is required. Apple's public lookup does
+not expose the internal build number, so the website intentionally publishes the
+customer-facing version instead.
+
+GitHub automatically disables scheduled workflows in public repositories after
+60 days without repository activity. If that happens, re-enable this workflow in
+the Actions tab and use `workflow_dispatch` for an immediate manual refresh.
 
 ## Cloudflare Pages
 

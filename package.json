@@ -3,10 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.10.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync:release": "node scripts/sync-app-store-release.mjs",
+    "test:release-sync": "node --test tests/app-store-release.test.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
