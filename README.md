@@ -44,7 +44,7 @@ Use a dedicated Pages project for this repository so the app site can deploy ind
 - Optional environment override: `VITE_APP_STORE_URL`
 - Custom domain: `moro.somincola.com`
 
-The `somincola.com` zone can continue serving the company website while the `moro` subdomain points at this separate Pages project. The Mastodon server and its web identity remain under `somincola.org`.
+The `somincola.com` zone can continue serving the company website while the `moro` subdomain points at this separate Pages project. The Somincola Garden Mastodon server and its web identity remain under `somincola.org`.
 
 ## Brand and content
 

@@ -172,7 +172,7 @@ const serverGroups = [
   ["hachyderm.io", "Mastodon"],
   ["mastodon.social", "Mastodon"],
   ["fosstodon.org", "Mastodon"],
-  ["m.somincola.org", "Mastodon"],
+  ["m.somincola.org", "Somincola Garden"],
   ["kollektiv.social", "Mastodon"],
   ["norden.social", "Mastodon"],
 ];
