@@ -21,7 +21,6 @@
   - `output/playwright/support-desktop.png`
   - `output/playwright/trust-transparency-desktop-clean.png`
   - `output/playwright/trust-security-desktop.png`
-  - `output/playwright/trust-releases-desktop.png`
   - `output/playwright/trust-licenses-desktop.png`
   - `output/playwright/trust-transparency-mobile.png`
   - `output/playwright/trust-security-mobile.png`
@@ -45,7 +44,7 @@ The full-page browser capture cannot reproduce a sticky element at every scroll 
 - Following, Local, and Federated preview tabs switch content.
 - Like and bookmark controls update their visible count/state and `aria-pressed` values.
 - App Store badges expose direct, accessible links to Moro's permanent listing in every route.
-- `/privacy`, `/terms`, `/support`, `/transparency`, `/security`, `/releases`, and `/licenses` load directly with route-specific titles.
+- `/privacy`, `/terms`, `/support`, `/transparency`, `/security`, and `/licenses` load directly with route-specific titles.
 - `/.well-known/security.txt` returns a plain-text security contact instead of the app shell.
 - Browser console checks returned 0 errors and 0 warnings on the home, legal, support, and trust routes.
 

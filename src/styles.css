@@ -1459,8 +1459,7 @@ img {
 }
 
 .trust-panel h2,
-.security-report-card h2,
-.release-card h2 {
+.security-report-card h2 {
   margin: 12px 0 14px;
   font-family: var(--serif);
   font-size: 36px;
@@ -1583,21 +1582,6 @@ img {
   gap: 18px;
 }
 
-.trust-version-line {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.trust-version-line span {
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #edf1f5;
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .report-checklist {
   margin-top: 18px;
   display: grid;
@@ -1670,83 +1654,6 @@ img {
   color: var(--ink-soft);
   font-size: 13px;
   line-height: 1.6;
-}
-
-.release-card {
-  overflow: hidden;
-  border: 1px solid #41556f;
-  border-radius: 23px;
-  background: var(--navy);
-  color: #fff;
-  box-shadow: 0 24px 52px rgba(3, 26, 59, 0.18);
-}
-
-.release-card-heading {
-  padding: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
-}
-
-.release-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: #c7dece;
-  font-size: 12px;
-  font-weight: 750;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.release-card h2 {
-  margin: 16px 0 9px;
-  font-size: clamp(49px, 7vw, 76px);
-}
-
-.release-card-heading p {
-  margin: 0;
-  color: #cbd4df;
-  font-size: 14px;
-}
-
-.release-highlights {
-  padding: 34px 42px 40px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.045);
-}
-
-.release-highlights h3 {
-  margin: 0 0 15px;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.release-highlights ul {
-  margin: 0;
-  padding-left: 19px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 40px;
-}
-
-.release-highlights li {
-  color: #d7dee8;
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-.release-highlights > p {
-  margin: 0;
-  color: #d7dee8;
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-.release-notes-grid {
-  margin-top: 18px;
 }
 
 .license-intro {
@@ -2221,10 +2128,6 @@ img {
     margin-top: 28px;
   }
 
-  .release-highlights ul {
-    grid-template-columns: 1fr;
-  }
-
   .license-list {
     grid-template-columns: 1fr;
   }
@@ -2573,20 +2476,6 @@ img {
 
   .report-checklist {
     gap: 23px;
-  }
-
-  .release-card-heading {
-    padding: 32px 24px;
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .release-card-heading .trust-button {
-    width: 100%;
-  }
-
-  .release-highlights {
-    padding: 28px 24px 32px;
   }
 
   .license-list article {

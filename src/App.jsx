@@ -9,7 +9,6 @@ import {
   BookmarkSimple,
   Buildings,
   Bug,
-  CalendarBlank,
   CheckCircle,
   Database,
   DeviceMobile,
@@ -39,38 +38,15 @@ import {
   hasAnalyticsConsent,
   trackEvent,
 } from "./analytics.js";
-import appStoreRelease from "./data/app-store-release.json";
 
-const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim() || appStoreRelease.appStoreUrl;
+const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim()
+  || "https://apps.apple.com/app/id6776115614";
 const SITE_URL = "https://moro.somincola.com";
 const SECURITY_REPORT_URL = "mailto:support@somincola.com?subject=Moro%20security%20report";
-
-const releaseDateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "long",
-  day: "numeric",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-function formatReleaseDate(value) {
-  return releaseDateFormatter.format(new Date(value));
-}
-
-function formatOSVersion(value) {
-  const components = String(value).split(".");
-  while (components.length > 1 && components.at(-1) === "0") components.pop();
-  return components.join(".");
-}
-
-const publicReleaseName = `Moro ${appStoreRelease.version}`;
-const publicReleaseDate = formatReleaseDate(appStoreRelease.releaseDate);
-const publicReleaseSyncDate = formatReleaseDate(appStoreRelease.syncedAt);
-const publicReleaseMinimumOS = `iOS ${formatOSVersion(appStoreRelease.minimumOsVersion)} or later`;
 
 const trustNavigation = [
   { href: "/transparency", label: "Transparency" },
   { href: "/security", label: "Security" },
-  { href: "/releases", label: "Releases" },
   { href: "/licenses", label: "Licenses" },
 ];
 
@@ -619,7 +595,6 @@ function Footer({ includeCredits = false }) {
           <a href="/privacy">Privacy</a>
           <a href="/security">Security</a>
           <a href="/transparency">Transparency</a>
-          <a href="/releases">Releases</a>
           <a href="/licenses">Licenses</a>
           <a href="/terms">Terms</a>
           <a href="/support">Support</a>
@@ -864,7 +839,7 @@ function TransparencyPage() {
       icon={FingerprintSimple}
       title="Where your data goes"
       description="Moro is a client, not a social network. These are the paths your information can take when you use the App or this website."
-      updated="August 19, 2026"
+      updated="August 20, 2026"
     >
       <section className="trust-fact-grid" aria-label="Privacy facts">
         {facts.map(({ icon: Icon, title, copy }) => (
@@ -918,7 +893,7 @@ function TransparencyPage() {
         <div>
           <p className="section-kicker">Source availability</p>
           <h2>Private product code, public trust record.</h2>
-          <p>The Moro iOS application source is private and proprietary. The website repository, policy changes, security contact, and release information are public so the commitments on these pages have a visible history.</p>
+          <p>The Moro iOS application source is private and proprietary. The website repository, policy changes, and security contact are public so the commitments on these pages have a visible history.</p>
         </div>
         <a className="trust-text-link" href="https://github.com/somincola/moro-web" target="_blank" rel="noreferrer">
           View website history <ArrowSquareOut size={18} />
@@ -934,7 +909,7 @@ function SecurityPage() {
       icon={ShieldCheck}
       title="Security"
       description="Report a security problem privately so we can investigate it without putting other Moro users at risk."
-      updated="August 19, 2026"
+      updated="August 20, 2026"
     >
       <section className="security-report-card">
         <div className="security-report-icon" aria-hidden="true"><Bug size={31} weight="duotone" /></div>
@@ -950,11 +925,9 @@ function SecurityPage() {
 
       <div className="trust-two-column">
         <section className="trust-panel">
-          <p className="section-kicker">Supported release</p>
-          <h2>{publicReleaseName}</h2>
-          <p className="trust-version-line"><span>{publicReleaseMinimumOS}</span></p>
-          <p>Security fixes are delivered through the latest version available from the App Store. Reports about a newer test build are also welcome when you identify the build number.</p>
-          <a className="trust-text-link" href="/releases">Review release status <ArrowRight size={18} /></a>
+          <p className="section-kicker">Project security</p>
+          <h2>Protect the app and its users.</h2>
+          <p>We review reports across Moro’s app, extensions, encrypted push relay, and website, then prioritize fixes according to user impact.</p>
         </section>
 
         <section className="trust-panel">
@@ -975,7 +948,7 @@ function SecurityPage() {
           <h2>Help us reproduce it safely.</h2>
         </div>
         <ul>
-          <li><CheckCircle size={20} weight="fill" /> Moro version and build number</li>
+          <li><CheckCircle size={20} weight="fill" /> Affected Moro feature and account context</li>
           <li><CheckCircle size={20} weight="fill" /> iOS version and device model</li>
           <li><CheckCircle size={20} weight="fill" /> Reproduction steps using test data</li>
           <li><CheckCircle size={20} weight="fill" /> Expected impact and any suggested mitigation</li>
@@ -991,58 +964,6 @@ function SecurityPage() {
         <li><strong>Triage</strong><span>We verify scope and impact, then keep the reporter informed as the investigation progresses.</span></li>
         <li><strong>Resolution</strong><span>We coordinate a fix and public notice when disclosure helps users update safely.</span></li>
       </ol>
-    </TrustLayout>
-  );
-}
-
-function ReleasesPage() {
-  return (
-    <TrustLayout
-      icon={CalendarBlank}
-      title="Release status"
-      description="The version marked Available here is the version Apple is publicly distributing, not a private development build."
-      updated={publicReleaseSyncDate}
-      updatedLabel="Last synced from Apple"
-    >
-      <section className="release-card">
-        <div className="release-card-heading">
-          <div>
-            <span className="release-status"><CheckCircle size={17} weight="fill" /> Available on the App Store</span>
-            <h2>{publicReleaseName}</h2>
-            <p>Released {publicReleaseDate} · Requires {publicReleaseMinimumOS}</p>
-          </div>
-          <a className="trust-button" href={APP_STORE_URL} target="_blank" rel="noreferrer">
-            Open App Store <ArrowSquareOut size={18} />
-          </a>
-        </div>
-        <div className="release-highlights">
-          <h3>Highlights</h3>
-          {appStoreRelease.releaseNotes.length > 0 ? (
-            <ul>
-              {appStoreRelease.releaseNotes.map((note) => <li key={note}>{note}</li>)}
-            </ul>
-          ) : (
-            <p>Apple has not published update notes for this release.</p>
-          )}
-        </div>
-      </section>
-
-      <div className="trust-two-column release-notes-grid">
-        <section className="trust-panel">
-          <p className="section-kicker">Status rule</p>
-          <h2>Public means downloadable.</h2>
-          <p>The private development repository can contain a newer version number. This page changes the public status only after Apple’s public App Store data shows that release.</p>
-        </section>
-        <section className="trust-panel">
-          <p className="section-kicker">Verification</p>
-          <h2>Public checks</h2>
-          <ul>
-            <li>The App Store lists version {appStoreRelease.version} as available.</li>
-            <li>The listing reports {publicReleaseDate} as the release date and iOS {formatOSVersion(appStoreRelease.minimumOsVersion)} as the minimum version.</li>
-            <li>Release data was synchronized from Apple on {publicReleaseSyncDate}.</li>
-          </ul>
-        </section>
-      </div>
     </TrustLayout>
   );
 }
@@ -1097,7 +1018,7 @@ function SupportPage() {
   const links = [
     { icon: EnvelopeSimple, title: "Contact support", copy: "We’ll help with accounts, notifications, or unexpected behaviour.", href: "mailto:support@somincola.com", label: "support@somincola.com", analyticsEvent: ANALYTICS_EVENTS.supportContactClick },
     { icon: ShieldCheck, title: "Privacy policy", copy: "See what Moro handles on-device, through your server, and for push notifications.", href: "/privacy", label: "Read privacy policy" },
-    { icon: Bug, title: "Security reports", copy: "Report a vulnerability privately and review the currently supported release.", href: "/security", label: "Review security policy" },
+    { icon: Bug, title: "Security reports", copy: "Report a vulnerability privately and review the project’s security scope.", href: "/security", label: "Review security policy" },
     { icon: FileText, title: "Terms of use", copy: "Understand the terms that apply when you download and use Moro.", href: "/terms", label: "Read terms" },
   ];
   return (
@@ -1108,7 +1029,7 @@ function SupportPage() {
           <div className="support-icon"><img src="/assets/moro-app-icon.png" alt="Moro app icon" /></div>
           <p className="section-kicker">Moro support</p>
           <h1>How can we help?</h1>
-          <p>Tell us what happened, which server you use, and your Moro version. Please never email your password or access token.</p>
+          <p>Tell us what happened, what you were trying to do, and which server you use. Please never email your password or access token.</p>
         </section>
         <section className="support-grid" aria-label="Support options">
           {links.map(({ icon: Icon, title, copy, href, label, analyticsEvent }) => (
@@ -1155,7 +1076,6 @@ export function App() {
   if (path === "/support") return <SupportPage />;
   if (path === "/transparency") return <TransparencyPage />;
   if (path === "/security") return <SecurityPage />;
-  if (path === "/releases") return <ReleasesPage />;
   if (path === "/licenses") return <LicensesPage />;
   return <NotFoundPage />;
 }
