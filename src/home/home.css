@@ -249,11 +249,19 @@
 
 .m-menu {
   display: none;
-  padding: 8px;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: 0;
   background: none;
   color: inherit;
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+.m-menu svg {
+  display: block;
 }
 
 /* Hero -------------------------------------------------------------------- */
@@ -797,21 +805,29 @@
   }
 
   .m-header-inner {
-    height: 56px;
-    flex-wrap: wrap;
-  }
-
-  .m-header.is-open {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    /* Keep the brand and toggle fixed while the navigation adds its own row. */
+    grid-template-rows: 56px auto;
     height: auto;
   }
 
+  .m-header.is-open {
+    background: var(--paper);
+    /* An expanded menu needs an opaque surface from the first frame. */
+    transition: none;
+  }
+
   .m-menu {
-    display: block;
+    display: grid;
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .m-nav {
     display: none;
-    order: 3;
+    grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
     flex-direction: column;
     align-items: flex-start;
