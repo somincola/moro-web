@@ -27,6 +27,21 @@ pnpm build
 
 The production bundle is emitted to `dist/`.
 
+### Prerendering and SEO
+
+`pnpm build` runs three steps: the client build, an SSR build of
+`src/entry-server.jsx`, and `scripts/prerender.mjs`, which writes a fully
+rendered HTML file per route (`dist/index.html`, `dist/privacy.html`, …,
+`dist/404.html`) with its own title, description, canonical URL and social
+tags. The client hydrates that markup. Page metadata lives in `src/seo.js`;
+add new routes there and in `App.jsx`.
+
+- Hashed bundles are emitted to `/_app/` and cached immutably (`public/_headers`).
+- There is no SPA catch-all in `public/_redirects`; unknown paths get `404.html`.
+- `public/assets/og-image.png` is a 1200×630 capture of the homepage hero.
+- Homepage screenshots ship at 480/600/720 px (`srcset`); regenerate all three
+  sizes from moro-ios `screenshots/app-store/en-US/iphone/` when the UI changes.
+
 ## App Store URL
 
 The production site links to Moro's permanent App Store listing by default:

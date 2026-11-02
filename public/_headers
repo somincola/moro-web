@@ -7,3 +7,12 @@
 /.well-known/security.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: public, max-age=3600
+
+/_app/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/favicon.ico
+  Cache-Control: public, max-age=604800

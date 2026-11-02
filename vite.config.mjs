@@ -13,5 +13,10 @@ export default defineConfig({
       clientFiles: ["./src/main.jsx"],
     },
   },
+  build: {
+    // Vite's hashed bundles live under /_app so they can be cached forever,
+    // separately from the un-hashed images in /assets.
+    assetsDir: "_app",
+  },
   plugins: [react(), partytownVite()],
 });

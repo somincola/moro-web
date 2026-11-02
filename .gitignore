@@ -9,3 +9,5 @@ output/
 .env.*
 !.env.example
 .DS_Store
+
+dist-ssr

@@ -1,0 +1,944 @@
+/* ==========================================================================
+   Moro — homepage
+   Echoes the iOS app: pure monochrome, a black starfield hero with the
+   particle globe from onboarding, white pages, real product screenshots.
+   One typeface (Inter, standing in for the app's system font), hairlines,
+   generous space, a single soft fade. Scoped under .m-site.
+   ========================================================================== */
+
+.m-site {
+  --night: #050608;
+  --ink: #0a0a0c;
+  --ink-2: #55575e;
+  --ink-3: #6f7178; /* ≥4.5:1 on white */
+  --paper: #ffffff;
+  --mist: #f5f5f6;
+  --line: rgba(10, 10, 12, 0.1);
+  --on-night: #f5f5f7;
+  --on-night-2: rgba(245, 245, 247, 0.62);
+  --on-night-3: rgba(245, 245, 247, 0.52); /* ≥4.5:1 on night */
+  --line-night: rgba(245, 245, 247, 0.12);
+  --sans: "Inter Variable", Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+.m-site h1,
+.m-site h2,
+.m-site h3 {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.m-site p {
+  text-wrap: pretty;
+}
+
+.m-wrap {
+  width: min(100% - 64px, 1120px);
+  margin: 0 auto;
+}
+
+.m-site :focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+/* Atoms ------------------------------------------------------------------- */
+
+.m-label {
+  margin: 0 0 20px;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.m-badge {
+  display: inline-flex;
+}
+
+.m-badge img {
+  height: 48px;
+  width: auto;
+}
+
+.m-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  opacity: 0.86;
+  transition: opacity 0.25s, gap 0.3s var(--ease);
+}
+
+.m-link:hover {
+  opacity: 1;
+  gap: 9px;
+}
+
+/* Device frame — thin, black, exact; the screenshot does the talking */
+
+.m-device {
+  /* contain the screenshot's margin (the bezel) so it can never collapse
+     through the frame, whatever the frame sits in */
+  display: flow-root;
+  flex: none;
+  align-self: flex-start;
+  margin: 0;
+  width: 100%;
+  border-radius: 14.5% / 6.7%;
+  background: #0b0b0d;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 24px 48px -26px rgba(0, 0, 0, 0.28);
+}
+
+/* The bezel is a margin on the screenshot: percentages resolve against the
+   frame's own width, so every device has the same thin bezel at any size. */
+.m-device img {
+  display: block;
+  width: 97%;
+  height: auto;
+  margin: 1.5%;
+  aspect-ratio: 720 / 1564;
+  border-radius: 13.4% / 6.1%;
+  background: var(--mist);
+}
+
+.m-device--dark {
+  background: #141518;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 40px 80px -30px rgba(0, 0, 0, 0.9);
+}
+
+.m-device--dark img {
+  background: #000;
+}
+
+/* Motion ------------------------------------------------------------------ */
+
+.m-fade {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: m-fade 1.4s var(--ease) var(--d, 0ms) forwards;
+}
+
+@keyframes m-fade {
+  to { opacity: 1; transform: none; }
+}
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 1.2s var(--ease) var(--delay, 0ms),
+    transform 1.2s var(--ease) var(--delay, 0ms);
+}
+
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Header ------------------------------------------------------------------ */
+
+.m-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  border-bottom: 1px solid transparent;
+  transition: background 0.4s var(--ease), color 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.m-header.is-dark {
+  color: var(--on-night);
+}
+
+.m-header.is-dark.is-scrolled {
+  background: rgba(5, 6, 8, 0.72);
+  border-bottom-color: var(--line-night);
+  backdrop-filter: saturate(160%) blur(20px);
+  -webkit-backdrop-filter: saturate(160%) blur(20px);
+}
+
+.m-header.is-light {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.78);
+  border-bottom-color: var(--line);
+  backdrop-filter: saturate(160%) blur(20px);
+  -webkit-backdrop-filter: saturate(160%) blur(20px);
+}
+
+.m-header-inner {
+  width: min(100% - 64px, 1120px);
+  height: 64px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.m-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.m-brand img {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  box-shadow: 0 0 0 0.5px rgba(127, 127, 127, 0.4);
+}
+
+.m-nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.m-nav a {
+  color: inherit;
+  font-size: 13.5px;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.25s;
+}
+
+.m-nav a:hover {
+  opacity: 1;
+}
+
+.m-nav .m-nav-cta {
+  opacity: 1;
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-weight: 550;
+  transition: opacity 0.25s, background 0.4s var(--ease), color 0.4s var(--ease);
+}
+
+.m-header.is-dark .m-nav-cta {
+  background: var(--on-night);
+  color: var(--night);
+}
+
+.m-header.is-light .m-nav-cta {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.m-nav .m-nav-cta:hover {
+  opacity: 0.86;
+}
+
+.m-menu {
+  display: none;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Hero -------------------------------------------------------------------- */
+
+.m-hero {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  min-height: 640px;
+  max-height: 1100px;
+  overflow: hidden;
+  background: var(--night);
+  color: var(--on-night);
+}
+
+.m-globe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.m-globe.is-dragging {
+  cursor: grabbing;
+}
+
+.m-hero-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(56px, 9vh, 104px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.m-hero-copy a {
+  pointer-events: auto;
+}
+
+.m-hero h1 {
+  font-size: clamp(56px, 7vw, 88px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.m-hero-for {
+  margin: 14px 0 0;
+  color: var(--on-night-3);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.m-hero-lede {
+  margin: 26px 0 30px;
+  color: var(--on-night-2);
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+
+.m-hero-hint {
+  position: absolute;
+  right: 32px;
+  bottom: 28px;
+  margin: 0;
+  color: var(--on-night-3);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+/* Intro ------------------------------------------------------------------- */
+
+.m-intro {
+  padding: 180px 0 160px;
+}
+
+.m-intro-head {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.m-intro h2,
+.m-gallery-title,
+.m-privacy h2,
+.m-download h2 {
+  font-size: clamp(40px, 5.2vw, 68px);
+  font-weight: 650;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+
+.m-intro-head p {
+  max-width: 560px;
+  margin: 28px auto 0;
+  color: var(--ink-2);
+  font-size: 19px;
+  line-height: 1.6;
+  letter-spacing: -0.012em;
+}
+
+.m-duo {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 56px;
+  margin-top: 110px;
+}
+
+.m-duo .m-device {
+  width: min(320px, 38vw);
+}
+
+.m-duo-b {
+  margin-top: 80px;
+}
+
+.m-caption {
+  margin: 56px 0 0;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+/* Features ---------------------------------------------------------------- */
+
+.m-features {
+  background: var(--mist);
+  padding: 40px 0;
+}
+
+.m-feature {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  padding: 120px 0;
+}
+
+.m-feature + .m-feature {
+  border-top: 1px solid var(--line);
+}
+
+.m-feature--reverse .m-feature-copy {
+  order: 2;
+}
+
+.m-feature-copy {
+  max-width: 420px;
+}
+
+.m-feature--reverse .m-feature-copy {
+  justify-self: end;
+}
+
+.m-feature h3 {
+  font-size: clamp(34px, 3.8vw, 52px);
+  font-weight: 650;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+}
+
+.m-feature-copy > p:last-child {
+  margin: 24px 0 0;
+  color: var(--ink-2);
+  font-size: 17px;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+}
+
+.m-feature-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.m-feature-visual .m-device {
+  width: min(310px, 72vw);
+}
+
+/* Gallery ----------------------------------------------------------------- */
+
+.m-gallery {
+  padding: 170px 0 180px;
+}
+
+.m-site .m-gallery-title {
+  margin-bottom: 96px;
+  text-align: center;
+}
+
+.m-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.m-gallery-grid figure {
+  margin: 0;
+}
+
+/* keep the gallery row exactly as it was signed off */
+.m-gallery-grid .m-device img {
+  width: 96.2%;
+  margin: 1.9%;
+  border-radius: 12.8% / 5.9%;
+}
+
+.m-gallery-grid figcaption {
+  margin-top: 28px;
+  padding-right: 8px;
+}
+
+.m-gallery-grid strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.m-gallery-grid figcaption span {
+  display: block;
+  margin-top: 6px;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Privacy (night) — echoes the app's starfield sign-in -------------------- */
+
+.m-privacy {
+  background: var(--night);
+  color: var(--on-night);
+  padding: 170px 0 150px;
+}
+
+.m-privacy-inner {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 110px;
+  align-items: center;
+}
+
+.m-privacy-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.m-privacy-visual .m-device {
+  width: min(310px, 72vw);
+}
+
+.m-privacy .m-label {
+  color: var(--on-night-3);
+}
+
+.m-privacy-lede {
+  max-width: 460px;
+  margin: 24px 0 0;
+  color: var(--on-night-2);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.m-privacy dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px 40px;
+  margin: 56px 0 0;
+}
+
+.m-privacy dl > div {
+  padding-top: 20px;
+  border-top: 1px solid var(--line-night);
+}
+
+.m-privacy dt {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.m-privacy dd {
+  margin: 8px 0 0;
+  color: var(--on-night-2);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.m-privacy-links {
+  display: flex;
+  gap: 32px;
+  margin-top: 52px;
+}
+
+/* Download (night) — the page closes under the same sky it opened with -- */
+
+.m-download {
+  position: relative;
+  overflow: hidden;
+  padding: 150px 0 140px;
+  background: var(--night);
+  color: var(--on-night);
+  isolation: isolate;
+}
+
+.m-download::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(100% - 64px, 1120px);
+  height: 1px;
+  translate: -50% 0;
+  background: var(--line-night);
+}
+
+.m-download-sky {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.m-download-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: center;
+  align-items: center;
+  column-gap: 96px;
+}
+
+.m-download-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.m-download-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 32px;
+  border-radius: 15px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 0 48px rgba(255, 255, 255, 0.06);
+}
+
+.m-download h2 {
+  font-size: clamp(44px, 5.4vw, 72px);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+}
+
+.m-download-lede {
+  margin: 14px 0 0;
+  color: var(--on-night-2);
+  font-size: 18px;
+  letter-spacing: -0.012em;
+}
+
+.m-download-cta {
+  margin-top: 36px;
+}
+
+.m-download-cta .m-badge img {
+  height: 48px;
+}
+
+.m-note {
+  margin: 20px 0 0;
+  color: var(--on-night-3);
+  font-size: 12.5px;
+}
+
+/* Scan — the primary path for anyone reading this on a computer */
+.m-download-scan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding-left: 96px;
+  border-left: 1px solid var(--line-night);
+  color: inherit;
+  text-decoration: none;
+}
+
+.m-qr-tile {
+  display: block;
+  padding: 10px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 30px 60px -30px rgba(0, 0, 0, 0.8);
+  transition: transform 0.4s var(--ease);
+}
+
+.m-download-scan:hover .m-qr-tile {
+  transform: translateY(-2px);
+}
+
+.m-qr-tile img {
+  display: block;
+  width: 200px;
+  height: 200px;
+}
+
+.m-scan-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.m-scan-copy strong {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.m-scan-copy span {
+  color: var(--on-night-2);
+  font-size: 13px;
+}
+
+/* Footer (night) ---------------------------------------------------------- */
+
+.m-footer {
+  padding-bottom: 44px;
+  background: var(--night);
+  color: var(--on-night);
+}
+
+.m-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 28px 0;
+  border-top: 1px solid var(--line-night);
+  border-bottom: 1px solid var(--line-night);
+}
+
+.m-footer .m-brand {
+  color: var(--on-night);
+}
+
+.m-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+}
+
+.m-footer nav a,
+.m-footer nav button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--on-night-2);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.25s;
+}
+
+.m-footer nav a:hover,
+.m-footer nav button:hover {
+  color: var(--on-night);
+}
+
+.m-footer-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  padding-top: 24px;
+  color: var(--on-night-3);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.m-footer-meta p {
+  margin: 0;
+}
+
+.m-footer-meta p:last-child {
+  max-width: 560px;
+  text-align: right;
+}
+
+.m-footer-meta a {
+  color: var(--on-night-2);
+}
+
+/* Responsive -------------------------------------------------------------- */
+
+@media (max-width: 980px) {
+  .m-feature,
+  .m-privacy-inner {
+    grid-template-columns: 1fr;
+    gap: 64px;
+  }
+
+  .m-feature-copy,
+  .m-feature--reverse .m-feature-copy {
+    order: 0;
+    justify-self: center;
+    text-align: center;
+  }
+
+  .m-privacy-copy {
+    order: -1;
+  }
+
+  .m-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 56px 28px;
+  }
+
+  .m-download-grid {
+    column-gap: 56px;
+  }
+
+  .m-download-scan {
+    padding-left: 56px;
+  }
+}
+
+@media (max-width: 760px) {
+  .m-wrap,
+  .m-header-inner {
+    width: min(100% - 40px, 1120px);
+  }
+
+  .m-header-inner {
+    height: 56px;
+    flex-wrap: wrap;
+  }
+
+  .m-header.is-open {
+    height: auto;
+  }
+
+  .m-menu {
+    display: block;
+  }
+
+  .m-nav {
+    display: none;
+    order: 3;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 4px 0 20px;
+  }
+
+  .m-header.is-open .m-nav {
+    display: flex;
+  }
+
+  .m-nav a {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 17px;
+    opacity: 1;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .m-nav .m-nav-cta {
+    width: auto;
+    margin-top: 18px;
+    padding: 10px 20px;
+    border-bottom: 0;
+  }
+
+  .m-hero-hint {
+    display: none;
+  }
+
+  .m-br {
+    display: none;
+  }
+
+  .m-intro h2,
+  .m-gallery-title {
+    text-wrap: balance;
+  }
+
+  .m-intro {
+    padding: 120px 0 110px;
+  }
+
+  .m-intro-head p {
+    font-size: 17px;
+  }
+
+  .m-duo {
+    gap: 16px;
+    margin-top: 72px;
+  }
+
+  .m-duo .m-device {
+    width: 44vw;
+  }
+
+  .m-duo-b {
+    margin-top: 48px;
+  }
+
+  .m-feature {
+    padding: 88px 0;
+  }
+
+  .m-gallery {
+    padding: 120px 0;
+  }
+
+  .m-site .m-gallery-title {
+    margin-bottom: 64px;
+  }
+
+  .m-gallery-grid {
+    gap: 44px 16px;
+  }
+
+  .m-gallery-grid figcaption span {
+    font-size: 13px;
+  }
+
+  .m-privacy {
+    padding: 110px 0;
+  }
+
+  .m-privacy dl {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .m-privacy-visual .m-device {
+    width: min(260px, 66vw);
+  }
+
+  .m-download {
+    padding: 110px 0 96px;
+  }
+
+  .m-download-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .m-download-main {
+    align-items: center;
+    text-align: center;
+  }
+
+  .m-download-scan {
+    display: none;
+  }
+
+  .m-footer-row,
+  .m-footer-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .m-footer-meta p:last-child {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-fade,
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
+  }
+}

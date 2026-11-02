@@ -1,35 +1,24 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, Fragment, useContext, useEffect, useRef, useState } from "react";
 import {
-  ArrowBendUpLeft,
   ArrowRight,
   ArrowSquareOut,
   ArrowsLeftRight,
-  ArrowsClockwise,
   Bell,
-  BookmarkSimple,
   Buildings,
   Bug,
   CheckCircle,
   Database,
   DeviceMobile,
-  DotsThree,
   EnvelopeSimple,
   FileText,
   FingerprintSimple,
   GlobeHemisphereWest,
-  Heart,
   House,
   List,
   LockKey,
-  MagnifyingGlass,
-  MegaphoneSimple,
-  Package,
   PaperPlaneTilt,
-  PencilSimpleLine,
   Pulse,
   ShieldCheck,
-  UserCircle,
-  UsersThree,
   X,
 } from "@phosphor-icons/react";
 import {
@@ -38,10 +27,14 @@ import {
   hasAnalyticsConsent,
   trackEvent,
 } from "./analytics.js";
+import { LuxHomePage, SiteFooter, SiteHeader } from "./home/HomePage.jsx";
+import "./home/subpages.css";
+import { metaFor, normalizePath, SITE_URL } from "./seo.js";
+
+const PathContext = createContext("/");
 
 const APP_STORE_URL = import.meta.env.VITE_APP_STORE_URL?.trim()
   || "https://apps.apple.com/app/id6776115614";
-const SITE_URL = "https://moro.somincola.com";
 const SECURITY_REPORT_URL = "mailto:support@somincola.com?subject=Moro%20security%20report";
 
 const trustNavigation = [
@@ -50,156 +43,12 @@ const trustNavigation = [
   { href: "/licenses", label: "Licenses" },
 ];
 
-const timelineByTab = {
-  Following: [
-    {
-      id: "mira-tokyo",
-      name: "Mira Chen",
-      handle: "@mira@hachyderm.io",
-      time: "23m",
-      text: "Rainy nights in Tokyo have a rhythm of their own.",
-      image: "/assets/tokyo-rain-ayumi-kubo.jpg",
-      imageAlt: "A Tokyo intersection reflecting city lights in the rain",
-      likes: 12,
-      position: "center 54%",
-    },
-    {
-      id: "aiko-lake",
-      name: "Aiko Mori",
-      handle: "@aiko@mastodon.social",
-      time: "1h",
-      text: "Lake mornings and cold air. Hard to beat.",
-      image: "/assets/alpine-lake-jonny-gios.jpg",
-      imageAlt: "Green mountains reflected in a calm alpine lake",
-      likes: 8,
-      position: "center 36%",
-    },
-    {
-      id: "sofia-coast",
-      name: "Sofia Reyes",
-      handle: "@sofia@fosstodon.org",
-      time: "1h",
-      text: "Coastal trail, low clouds, and wildflowers.",
-      image: "/assets/coast-wildflowers-knopka-ivy.jpg",
-      imageAlt: "Wildflowers overlooking a textured blue coastline",
-      likes: 15,
-      position: "center 46%",
-    },
-  ],
-  Local: [
-    {
-      id: "mira-tokyo",
-      name: "Mira Chen",
-      handle: "@mira@hachyderm.io",
-      time: "23m",
-      text: "Rainy nights in Tokyo have a rhythm of their own.",
-      image: "/assets/tokyo-rain-ayumi-kubo.jpg",
-      imageAlt: "A Tokyo intersection reflecting city lights in the rain",
-      likes: 12,
-      position: "center 54%",
-    },
-    {
-      id: "aiko-lake",
-      name: "Aiko Mori",
-      handle: "@aiko@hachyderm.io",
-      time: "1h",
-      text: "Lake mornings and cold air. Hard to beat.",
-      image: "/assets/alpine-lake-jonny-gios.jpg",
-      imageAlt: "Green mountains reflected in a calm alpine lake",
-      likes: 8,
-      position: "center 36%",
-    },
-    {
-      id: "sofia-coast",
-      name: "Sofia Reyes",
-      handle: "@sofia@hachyderm.io",
-      time: "1h",
-      text: "Coastal trail, low clouds, and wildflowers.",
-      image: "/assets/coast-wildflowers-knopka-ivy.jpg",
-      imageAlt: "Wildflowers overlooking a textured blue coastline",
-      likes: 15,
-      position: "center 46%",
-    },
-  ],
-  Federated: [
-    {
-      id: "sofia-coast",
-      name: "Sofia Reyes",
-      handle: "@sofia@fosstodon.org",
-      time: "9m",
-      text: "The open web feels wide today. Sharing this view with everyone.",
-      image: "/assets/coast-wildflowers-knopka-ivy.jpg",
-      imageAlt: "Wildflowers overlooking a textured blue coastline",
-      likes: 15,
-      position: "center 46%",
-    },
-    {
-      id: "mira-tokyo",
-      name: "Mira Chen",
-      handle: "@mira@hachyderm.io",
-      time: "23m",
-      text: "雨の東京は、いつも少しだけ映画みたい。",
-      image: "/assets/tokyo-rain-ayumi-kubo.jpg",
-      imageAlt: "A Tokyo intersection reflecting city lights in the rain",
-      likes: 12,
-      position: "center 54%",
-    },
-    {
-      id: "aiko-lake",
-      name: "Aiko Mori",
-      handle: "@aiko@mastodon.social",
-      time: "1h",
-      text: "A quiet place for a noisy week.",
-      image: "/assets/alpine-lake-jonny-gios.jpg",
-      imageAlt: "Green mountains reflected in a calm alpine lake",
-      likes: 8,
-      position: "center 36%",
-    },
-  ],
-};
-
-const conversations = [
-  {
-    name: "Mira Chen",
-    handle: "@mira@hachyderm.io",
-    time: "23m",
-    text: "Rainy nights in Tokyo have a rhythm of their own.",
-    likes: 12,
-    image: "/assets/tokyo-rain-ayumi-kubo.jpg",
-  },
-  {
-    name: "Aiko Mori",
-    handle: "@aiko@mastodon.social",
-    time: "18m",
-    text: "Perfect for a late ramen run.",
-    likes: 5,
-    image: "/assets/alpine-lake-jonny-gios.jpg",
-  },
-  {
-    name: "Sofia Reyes",
-    handle: "@sofia@fosstodon.org",
-    time: "9m",
-    text: "That glow on wet pavement hits different.",
-    likes: 3,
-    image: "/assets/coast-wildflowers-knopka-ivy.jpg",
-  },
-];
-
-const serverGroups = [
-  ["hachyderm.io", "Mastodon"],
-  ["mastodon.social", "Mastodon"],
-  ["fosstodon.org", "Mastodon"],
-  ["m.somincola.org", "Somincola Garden"],
-  ["kollektiv.social", "Mastodon"],
-  ["norden.social", "Mastodon"],
-];
-
-function setPageMetadata(title, description) {
+function setPageMetadata({ title, description }, path) {
   document.title = title;
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.setAttribute("content", description);
 
-  const canonicalURL = new URL(window.location.pathname, SITE_URL).toString();
+  const canonicalURL = new URL(path, SITE_URL).toString();
   const canonical = document.querySelector('link[rel="canonical"]');
   if (canonical) canonical.setAttribute("href", canonicalURL);
 
@@ -214,447 +63,72 @@ function setPageMetadata(title, description) {
   });
 }
 
-function StoreBadge({ compact = false, location }) {
+function HomePage() {
+  return <LuxHomePage />;
+}
+
+/* Subpage shell — shares the homepage header and footer ------------------ */
+
+function SubShell({ children, className = "" }) {
   return (
-    <a
-      className={`store-badge ${compact ? "store-badge--compact" : ""}`}
-      href={APP_STORE_URL}
-      target="_blank"
-      rel="noreferrer"
-      aria-label="Download Moro on the App Store"
-      onClick={() => trackEvent(ANALYTICS_EVENTS.appStoreClick, {
-        cta_location: location,
-        link_url: APP_STORE_URL,
-      })}
-    >
-      <img src="/assets/download-on-app-store.png" alt="Download on the App Store" />
-    </a>
+    <div className={`m-site m-sub ${className}`}>
+      <SiteHeader startDark={false} />
+      <main className="s-main">{children}</main>
+      <SiteFooter credits={false} />
+    </div>
   );
 }
 
-function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
-
+function PageHead({ eyebrow, title, intro, meta, icon = false, children }) {
   return (
-    <header className="site-header">
-      <a className="brand" href="/" aria-label="Moro home">
-        <img src="/assets/moro-app-icon.png" alt="" />
-        <span>Moro</span>
-      </a>
-      <button
-        className="menu-button"
-        type="button"
-        aria-expanded={menuOpen}
-        aria-controls="primary-navigation"
-        aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-        onClick={() => setMenuOpen((value) => !value)}
-      >
-        {menuOpen ? <X size={22} /> : <List size={24} />}
-      </button>
-      <nav id="primary-navigation" className={menuOpen ? "primary-nav primary-nav--open" : "primary-nav"}>
-        <a href="/#features" onClick={() => setMenuOpen(false)}>Features</a>
-        <a href="/privacy" onClick={() => setMenuOpen(false)}>Privacy</a>
-        <a href="/transparency" onClick={() => setMenuOpen(false)}>Trust center</a>
-        <a href="/support" onClick={() => setMenuOpen(false)}>Support</a>
-        <StoreBadge compact location="header" />
-      </nav>
+    <header className="s-head">
+      <div className="s-wrap">
+        {icon ? <img className="s-head-icon" src="/assets/moro-icon-192.png" alt="" width="56" height="56" /> : null}
+        <p className="s-eyebrow">{eyebrow}</p>
+        <h1>{title}</h1>
+        {intro ? <p className="s-intro">{intro}</p> : null}
+        {meta ? <p className="s-meta">{meta}</p> : null}
+        {children}
+      </div>
     </header>
   );
 }
 
-function PostActions({ post, liked, bookmarked, onLike, onBookmark }) {
-  return (
-    <div className="post-actions" aria-label={`Actions for ${post.name}'s post`}>
-      <button type="button" aria-label="Reply"><ArrowBendUpLeft size={18} /></button>
-      <button type="button" aria-label="Boost"><ArrowsClockwise size={18} /></button>
-      <button className={liked ? "is-active" : ""} type="button" aria-pressed={liked} onClick={onLike} aria-label={liked ? "Unlike" : "Like"}>
-        <Heart size={18} weight={liked ? "fill" : "regular"} />
-        <span>{post.likes + (liked ? 1 : 0)}</span>
-      </button>
-      <button className={bookmarked ? "is-bookmarked" : ""} type="button" aria-pressed={bookmarked} onClick={onBookmark} aria-label={bookmarked ? "Remove bookmark" : "Bookmark"}>
-        <BookmarkSimple size={18} weight={bookmarked ? "fill" : "regular"} />
-      </button>
-      <button type="button" aria-label="More actions"><DotsThree size={19} weight="bold" /></button>
-    </div>
-  );
-}
+const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-function TimelinePost({ post, index, liked, bookmarked, onLike, onBookmark }) {
-  return (
-    <article className="timeline-post">
-      <div className="post-heading">
-        <img className="avatar" src={post.image} alt="" style={{ objectPosition: post.position }} />
-        <div className="post-identity">
-          <div><strong>{post.name}</strong> <span>{post.handle}</span></div>
-          <p>{post.text}</p>
-        </div>
-        <time>{post.time}</time>
-      </div>
-      <img
-        className="post-media"
-        src={post.image}
-        alt={post.imageAlt}
-        style={{ objectPosition: post.position }}
-        loading={index === 0 ? "eager" : "lazy"}
-      />
-      <PostActions
-        post={post}
-        liked={liked}
-        bookmarked={bookmarked}
-        onLike={onLike}
-        onBookmark={onBookmark}
-      />
-    </article>
-  );
-}
-
-function AppPreview() {
-  const [activeTab, setActiveTab] = useState("Local");
-  const [liked, setLiked] = useState({});
-  const [bookmarked, setBookmarked] = useState({});
-  const posts = timelineByTab[activeTab];
-
-  return (
-    <div className="app-preview" aria-label="Interactive Moro timeline preview">
-      <div className="feed-tabs" role="tablist" aria-label="Timeline type">
-        {Object.keys(timelineByTab).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === tab}
-            className={activeTab === tab ? "is-selected" : ""}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-        <button className="announcement-button" type="button" aria-label="Announcements"><MegaphoneSimple size={19} /></button>
-      </div>
-      <div className="timeline" role="tabpanel">
-        {posts.map((post, index) => (
-          <TimelinePost
-            key={`${activeTab}-${post.id}`}
-            post={post}
-            index={index}
-            liked={Boolean(liked[post.id])}
-            bookmarked={Boolean(bookmarked[post.id])}
-            onLike={() => setLiked((state) => ({ ...state, [post.id]: !state[post.id] }))}
-            onBookmark={() => setBookmarked((state) => ({ ...state, [post.id]: !state[post.id] }))}
-          />
-        ))}
-      </div>
-      <nav className="app-tab-bar" aria-label="Moro app preview navigation">
-        <button className="is-selected" type="button" aria-label="Home"><House size={23} weight="fill" /></button>
-        <button type="button" aria-label="Search"><MagnifyingGlass size={24} /></button>
-        <button type="button" aria-label="Post"><PencilSimpleLine size={24} /></button>
-        <button type="button" aria-label="Notifications"><Bell size={24} /></button>
-        <button type="button" aria-label="Profile"><UserCircle size={25} /></button>
-      </nav>
-    </div>
-  );
-}
-
-function Hero() {
-  return (
-    <section className="hero" aria-labelledby="hero-title">
-      <div className="hero-copy">
-        <p className="eyebrow"><GlobeHemisphereWest size={18} /> Built for the open social web</p>
-        <h1 id="hero-title">A calmer home<br />for the fediverse.</h1>
-        <p className="hero-lede">Read, connect, and share across the open social web.</p>
-        <StoreBadge location="hero" />
-        <p className="server-note"><CheckCircle size={18} weight="fill" /> Works with any Mastodon server</p>
-      </div>
-      <div className="hero-preview-wrap">
-        <div className="preview-halo" aria-hidden="true" />
-        <AppPreview />
-      </div>
-    </section>
-  );
-}
-
-function ConversationCard({ item, index }) {
-  return (
-    <article className="conversation-card" style={{ "--card-index": index }}>
-      <img src={item.image} alt="" />
-      <div>
-        <div className="conversation-meta"><strong>{item.name}</strong><span>{item.handle}</span><time>{item.time}</time></div>
-        <p>{item.text}</p>
-        <div className="conversation-actions"><ArrowBendUpLeft size={16} /><ArrowsClockwise size={16} /><Heart size={16} weight="fill" /><span>{item.likes}</span><BookmarkSimple size={16} /><DotsThree size={17} /></div>
-      </div>
-    </article>
-  );
-}
-
-function StorySection() {
-  const sectionRef = useRef(null);
-  const conversationsRef = useRef(null);
-  const networkRef = useRef(null);
+function LegalLayout({ title, description, updated, children }) {
+  const bodyRef = useRef(null);
+  const [toc, setToc] = useState([]);
+  const [active, setActive] = useState("");
 
   useEffect(() => {
-    const section = sectionRef.current;
-    const conversationsLayer = conversationsRef.current;
-    const networkLayer = networkRef.current;
-    if (!section || !conversationsLayer || !networkLayer) return undefined;
-
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const staticLayout = window.matchMedia("(max-width: 900px)");
-    let sectionTop = 0;
-    let travel = 1;
-    let lastProgress = -1;
-
-    const applyProgress = (progress) => {
-      if (Math.abs(progress - lastProgress) < 0.001) return;
-      lastProgress = progress;
-
-      const conversationOpacity = Math.max(0.3, 1 - progress * 0.9);
-      const networkOpacity = Math.min(1, Math.max(0.4, (progress + 0.08) * 1.35));
-      conversationsLayer.style.opacity = conversationOpacity.toFixed(4);
-      conversationsLayer.style.transform = `translate3d(0, ${(-progress * 34).toFixed(2)}px, 0)`;
-      networkLayer.style.opacity = networkOpacity.toFixed(4);
-      networkLayer.style.transform = `translate3d(0, ${((1 - networkOpacity) * 34).toFixed(2)}px, 0)`;
-    };
-
-    const measure = () => {
-      const rect = section.getBoundingClientRect();
-      sectionTop = window.scrollY + rect.top;
-      travel = Math.max(1, rect.height - window.innerHeight);
-    };
-
-    const update = () => {
-      if (reducedMotion.matches || staticLayout.matches) {
-        applyProgress(0.5);
-        return;
-      }
-
-      const scrollProgress = (window.scrollY - sectionTop) / travel;
-      const next = Math.min(1, Math.max(0, scrollProgress * 1.2));
-      applyProgress(next);
-    };
-
-    const onScroll = () => update();
-
-    const onResize = () => {
-      measure();
-      update();
-    };
-
-    measure();
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onResize);
-    window.addEventListener("load", onResize, { once: true });
-    reducedMotion.addEventListener("change", onResize);
-    staticLayout.addEventListener("change", onResize);
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("load", onResize);
-      reducedMotion.removeEventListener("change", onResize);
-      staticLayout.removeEventListener("change", onResize);
-    };
-  }, []);
-
-  return (
-    <section className="story" id="features" ref={sectionRef}>
-      <div className="story-stage">
-        <div className="story-glow" aria-hidden="true" />
-        <div className="story-conversations" ref={conversationsRef}>
-          <div className="story-copy">
-            <p className="section-kicker">Threads, made readable</p>
-            <h2>Conversations<br />without the noise.</h2>
-            <span className="gold-rule" aria-hidden="true" />
-            <p>Threads that feel like conversations. Follow replies with clarity and respond when you’re ready.</p>
-          </div>
-          <div className="conversation-stack">
-            <span className="thread-line" aria-hidden="true" />
-            {conversations.map((item, index) => <ConversationCard item={item} index={index} key={item.handle} />)}
-          </div>
-        </div>
-
-        <div className="network-story" ref={networkRef}>
-          <div className="network-copy">
-            <p className="section-kicker">Open by design</p>
-            <h2>One network.<br />Many homes.</h2>
-            <span className="gold-rule" aria-hidden="true" />
-            <p>Moro works with any Mastodon server you choose. Your community, your data, your decision.</p>
-          </div>
-          <div className="network-map" aria-label="Moro connects to independently operated Mastodon servers">
-            <div className="server-column">
-              {serverGroups.filter((_, index) => index % 2 === 0).map(([server, software]) => (
-                <div className="server-card" key={server}><Buildings size={22} /><span><strong>{server}</strong><small>{software}</small></span></div>
-              ))}
-            </div>
-            <div className="network-center">
-              <span className="network-rail network-rail--left" aria-hidden="true" />
-              <img src="/assets/moro-app-icon.png" alt="Moro" />
-              <span className="network-rail network-rail--right" aria-hidden="true" />
-            </div>
-            <div className="server-column">
-              {serverGroups.filter((_, index) => index % 2 === 1).map(([server, software]) => (
-                <div className="server-card" key={server}><Buildings size={22} /><span><strong>{server}</strong><small>{software}</small></span></div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PrivacySection() {
-  const points = [
-    { icon: House, title: "Your server", copy: "Pick any compatible Mastodon server. Change anytime." },
-    { icon: LockKey, title: "Your account", copy: "Log in with your existing account. Credentials stay in the iOS Keychain." },
-    { icon: UsersThree, title: "Your communities", copy: "Follow, reply, and boost across the open social web." },
-  ];
-  return (
-    <section className="privacy-feature" id="privacy" aria-labelledby="privacy-title">
-      <div className="privacy-mark"><img src="/assets/moro-app-icon.png" alt="Moro app icon" /></div>
-      <div className="privacy-copy">
-        <p className="section-kicker">Privacy, without theatre</p>
-        <h2 id="privacy-title">Your data. Your choice.</h2>
-        <span className="gold-rule" aria-hidden="true" />
-        <p>Moro connects directly to the Mastodon server you choose. We don’t sell your data or use it for advertising.</p>
-        <a className="text-link" href="/privacy">Read the privacy policy <ArrowRight size={17} /></a>
-      </div>
-      <div className="privacy-points">
-        {points.map(({ icon: Icon, title, copy }) => (
-          <article key={title}><Icon size={29} /><div><h3>{title}</h3><p>{copy}</p></div></article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function DownloadSection() {
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || !hasAnalyticsConsent()) return undefined;
-
+    const body = bodyRef.current;
+    if (!body) return undefined;
+    const headings = [...body.querySelectorAll("h2")];
+    headings.forEach((h, i) => { h.id = slugify(h.textContent) || `section-${i + 1}`; });
+    setToc(headings.map((h) => ({ id: h.id, label: h.textContent })));
+    if (headings[0]) setActive(headings[0].id);
     const observer = new IntersectionObserver((entries) => {
-      if (!entries.some((entry) => entry.isIntersecting)) return;
-      trackEvent(ANALYTICS_EVENTS.downloadSectionView, { section_id: "download" });
-      observer.disconnect();
-    }, { threshold: 0.5 });
-
-    observer.observe(section);
+      const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible[0]) setActive(visible[0].target.id);
+    }, { rootMargin: "-80px 0px -65% 0px" });
+    headings.forEach((h) => observer.observe(h));
     return () => observer.disconnect();
   }, []);
 
   return (
-    <section className="download" id="download" ref={sectionRef} aria-labelledby="download-title">
-      <img className="download-icon" src="/assets/moro-app-icon.png" alt="" />
-      <p className="section-kicker">Moro for iOS</p>
-      <h2 id="download-title">Get Moro for iPhone</h2>
-      <p>A calm, open, and respectful way to experience the fediverse.</p>
-      <div className="download-card">
-        <div className="download-card-copy">
-          <p className="download-card-label">Available on the App Store</p>
-          <h3>Bring the fediverse with you.</h3>
-          <p>Open the App Store directly, or scan the code with your iPhone camera.</p>
-          <StoreBadge location="download_card" />
-        </div>
-        <a
-          className="download-qr"
-          href={APP_STORE_URL}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Scan or open the QR code to download Moro on the App Store"
-          onClick={() => trackEvent(ANALYTICS_EVENTS.appStoreClick, {
-            cta_location: "download_qr",
-            link_url: APP_STORE_URL,
-          })}
-        >
-          <span className="download-qr-frame">
-            <img src="/assets/app-qrcode.png" alt="QR code for Moro on the App Store" />
-          </span>
-          <span className="download-qr-copy">
-            <strong>Scan to download</strong>
-            <small>Open with your iPhone camera</small>
-          </span>
-        </a>
-      </div>
-      <div className="download-region-note" role="note">
-        <span aria-hidden="true" />
-        Moro is not currently available on the App Store in mainland China.
-      </div>
-    </section>
-  );
-}
-
-function Footer({ includeCredits = false }) {
-  return (
-    <footer className="site-footer">
-      <div className="footer-main">
-        <a className="footer-brand" href="/"><img src="/assets/moro-app-icon.png" alt="" /><span>Moro</span></a>
-        <nav aria-label="Footer navigation">
-          <a href="/privacy">Privacy</a>
-          <a href="/security">Security</a>
-          <a href="/transparency">Transparency</a>
-          <a href="/licenses">Licenses</a>
-          <a href="/terms">Terms</a>
-          <a href="/support">Support</a>
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new Event(ANALYTICS_PREFERENCES_EVENT))}
-          >
-            Analytics preferences
-          </button>
+    <SubShell>
+      <PageHead eyebrow="Legal" title={title} meta={`Last updated ${updated}`} />
+      <div className="s-wrap s-doc-grid">
+        <nav className="s-toc" aria-label="On this page">
+          <p>On this page</p>
+          {toc.map((item) => (
+            <a key={item.id} href={`#${item.id}`} className={active === item.id ? "is-active" : undefined}>{item.label}</a>
+          ))}
         </nav>
-        <p>© 2026 somincola llc</p>
+        <article className="s-doc" ref={bodyRef}>{children}</article>
       </div>
-      {includeCredits ? (
-        <details className="photo-credits" id="credits">
-          <summary>Photo credits</summary>
-          <p>
-            Tokyo by <a href="https://unsplash.com/photos/QgM0UH5vH8M" target="_blank" rel="noreferrer">Ayumi Kubo</a>,
-            alpine lake by <a href="https://unsplash.com/photos/IWhpMyaol8c" target="_blank" rel="noreferrer">Jonny Gios</a>, and
-            coast by <a href="https://unsplash.com/photos/uUyEus69hh4" target="_blank" rel="noreferrer">Knopka Ivy</a> on Unsplash.
-          </p>
-        </details>
-      ) : null}
-    </footer>
-  );
-}
-
-function HomePage() {
-  useEffect(() => {
-    setPageMetadata("Moro — A calmer home for the fediverse", "Moro is a calm, privacy-respecting Mastodon client for iPhone.");
-  }, []);
-
-  return (
-    <>
-      <Header />
-      <main>
-        <Hero />
-        <StorySection />
-        <PrivacySection />
-        <DownloadSection />
-      </main>
-      <Footer includeCredits />
-    </>
-  );
-}
-
-function LegalLayout({ title, description, updated, children }) {
-  useEffect(() => setPageMetadata(`${title} — Moro`, description), [title, description]);
-  return (
-    <>
-      <Header />
-      <main className="document-shell">
-        <article className="legal-document">
-          <p className="section-kicker">Moro · somincola llc</p>
-          <h1>{title}</h1>
-          <p className="last-updated">Last updated: {updated}</p>
-          {children}
-        </article>
-      </main>
-      <Footer />
-    </>
+    </SubShell>
   );
 }
 
@@ -758,13 +232,9 @@ function TermsPage() {
 
 function TrustNavigation({ activePath }) {
   return (
-    <nav className="trust-navigation" aria-label="Trust center sections">
+    <nav className="s-tabs" aria-label="Trust center sections">
       {trustNavigation.map((item) => (
-        <a
-          href={item.href}
-          key={item.href}
-          aria-current={activePath === item.href ? "page" : undefined}
-        >
+        <a href={item.href} key={item.href} aria-current={activePath === item.href ? "page" : undefined}>
           {item.label}
         </a>
       ))}
@@ -772,56 +242,51 @@ function TrustNavigation({ activePath }) {
   );
 }
 
-function TrustLayout({ icon: Icon, title, description, updated, updatedLabel = "Last reviewed", children }) {
-  useEffect(() => setPageMetadata(`${title} — Moro`, description), [title, description]);
-  const activePath = window.location.pathname.replace(/\/+$/, "") || "/";
-
+function TrustLayout({ title, description, updated, updatedLabel = "Last reviewed", children }) {
+  const activePath = useContext(PathContext);
   return (
-    <>
-      <Header />
-      <main className="trust-shell">
-        <header className="trust-hero">
-          <div className="trust-hero-icon" aria-hidden="true">
-            <Icon size={38} weight="duotone" />
-          </div>
-          <p className="section-kicker">Moro trust center</p>
-          <h1>{title}</h1>
-          <p className="trust-intro">{description}</p>
-          <p className="trust-updated">{updatedLabel}: {updated}</p>
-          <TrustNavigation activePath={activePath} />
-        </header>
-        <div className="trust-content">{children}</div>
-      </main>
-      <Footer />
-    </>
+    <SubShell>
+      <PageHead eyebrow="Trust center" title={title} intro={description} meta={`${updatedLabel} ${updated}`}>
+        <TrustNavigation activePath={activePath} />
+      </PageHead>
+      <div className="s-wrap s-trust">{children}</div>
+    </SubShell>
+  );
+}
+
+function SectionHead({ label, title, children }) {
+  return (
+    <header className="s-section-head">
+      <p className="s-label">{label}</p>
+      <h2>{title}</h2>
+      {children ? <p>{children}</p> : null}
+    </header>
   );
 }
 
 function DataFlow({ label, summary, steps, bidirectional = false }) {
   return (
-    <article className="data-flow">
+    <article className="s-flow">
       <header>
-        <p>{label}</p>
-        <h2>{summary}</h2>
+        <p className="s-label">{label}</p>
+        <h3>{summary}</h3>
       </header>
-      <div className={`data-flow-chain ${steps.length > 3 ? "data-flow-chain--long" : ""}`}>
+      <ol className={`s-flow-chain ${steps.length > 3 ? "s-flow-chain--long" : ""}`}>
         {steps.map(({ icon: Icon, title, copy }, index) => (
           <Fragment key={title}>
-            <div className="data-endpoint">
-              <span aria-hidden="true"><Icon size={25} weight="duotone" /></span>
+            <li>
+              <span className="s-flow-icon" aria-hidden="true"><Icon size={20} weight="light" /></span>
               <strong>{title}</strong>
               <small>{copy}</small>
-            </div>
+            </li>
             {index < steps.length - 1 ? (
-              <span className="data-connector" aria-hidden="true">
-                {bidirectional && index === 0
-                  ? <ArrowsLeftRight size={23} />
-                  : <ArrowRight size={23} />}
-              </span>
+              <li className="s-flow-link" aria-hidden="true">
+                {bidirectional && index === 0 ? <ArrowsLeftRight size={16} /> : <ArrowRight size={16} />}
+              </li>
             ) : null}
           </Fragment>
         ))}
-      </div>
+      </ol>
     </article>
   );
 }
@@ -836,28 +301,25 @@ function TransparencyPage() {
 
   return (
     <TrustLayout
-      icon={FingerprintSimple}
       title="Where your data goes"
       description="Moro is a client, not a social network. These are the paths your information can take when you use the App or this website."
       updated="August 20, 2026"
     >
-      <section className="trust-fact-grid" aria-label="Privacy facts">
+      <section className="s-facts" aria-label="Privacy facts">
         {facts.map(({ icon: Icon, title, copy }) => (
           <article key={title}>
-            <Icon size={27} weight="duotone" />
+            <Icon size={24} weight="light" />
             <h2>{title}</h2>
             <p>{copy}</p>
           </article>
         ))}
       </section>
 
-      <section className="trust-section-heading" aria-labelledby="data-paths-title">
-        <p className="section-kicker">Data paths</p>
-        <h2 id="data-paths-title">Three boundaries, plainly drawn.</h2>
-        <p>Each path has a specific purpose. Website analytics never receives your Mastodon account activity.</p>
-      </section>
+      <SectionHead label="Data paths" title="Three boundaries, plainly drawn.">
+        Each path has a specific purpose. Website analytics never receives your Mastodon account activity.
+      </SectionHead>
 
-      <div className="data-flow-list">
+      <div className="s-flows">
         <DataFlow
           label="Reading and posting"
           summary="The App talks directly to your chosen server."
@@ -889,14 +351,14 @@ function TransparencyPage() {
         />
       </div>
 
-      <section className="trust-panel trust-source-panel">
+      <section className="s-callout">
         <div>
-          <p className="section-kicker">Source availability</p>
+          <p className="s-label">Source availability</p>
           <h2>Private product code, public trust record.</h2>
           <p>The Moro iOS application source is private and proprietary. The website repository, policy changes, and security contact are public so the commitments on these pages have a visible history.</p>
         </div>
-        <a className="trust-text-link" href="https://github.com/somincola/moro-web" target="_blank" rel="noreferrer">
-          View website history <ArrowSquareOut size={18} />
+        <a className="s-button s-button--ghost" href="https://github.com/somincola/moro-web" target="_blank" rel="noreferrer">
+          View website history <ArrowSquareOut size={15} />
         </a>
       </section>
     </TrustLayout>
@@ -906,34 +368,31 @@ function TransparencyPage() {
 function SecurityPage() {
   return (
     <TrustLayout
-      icon={ShieldCheck}
       title="Security"
       description="Report a security problem privately so we can investigate it without putting other Moro users at risk."
       updated="August 20, 2026"
     >
-      <section className="security-report-card">
-        <div className="security-report-icon" aria-hidden="true"><Bug size={31} weight="duotone" /></div>
+      <section className="s-report">
         <div>
-          <p className="section-kicker">Private reporting</p>
+          <p className="s-label">Private reporting</p>
           <h2>Found a vulnerability?</h2>
           <p>Email the report instead of opening a public issue. Never include a real password or access token.</p>
         </div>
-        <a className="trust-button" href={SECURITY_REPORT_URL}>
-          Email a private report <EnvelopeSimple size={18} />
+        <a className="s-button s-button--light" href={SECURITY_REPORT_URL}>
+          Email a private report <EnvelopeSimple size={16} />
         </a>
       </section>
 
-      <div className="trust-two-column">
-        <section className="trust-panel">
-          <p className="section-kicker">Project security</p>
+      <div className="s-cols">
+        <section className="s-panel">
+          <p className="s-label">Project security</p>
           <h2>Protect the app and its users.</h2>
           <p>We review reports across Moro’s app, extensions, encrypted push relay, and website, then prioritize fixes according to user impact.</p>
         </section>
-
-        <section className="trust-panel">
-          <p className="section-kicker">In scope</p>
+        <section className="s-panel">
+          <p className="s-label">In scope</p>
           <h2>What to report</h2>
-          <ul>
+          <ul className="s-list">
             <li>The Moro iOS app and its extensions.</li>
             <li>The encrypted push relay operated for Moro.</li>
             <li>This website and its consent controls.</li>
@@ -942,27 +401,24 @@ function SecurityPage() {
         </section>
       </div>
 
-      <section className="trust-panel report-checklist">
+      <section className="s-panel s-checklist">
         <div>
-          <p className="section-kicker">A useful report</p>
+          <p className="s-label">A useful report</p>
           <h2>Help us reproduce it safely.</h2>
         </div>
         <ul>
-          <li><CheckCircle size={20} weight="fill" /> Affected Moro feature and account context</li>
-          <li><CheckCircle size={20} weight="fill" /> iOS version and device model</li>
-          <li><CheckCircle size={20} weight="fill" /> Reproduction steps using test data</li>
-          <li><CheckCircle size={20} weight="fill" /> Expected impact and any suggested mitigation</li>
+          <li><CheckCircle size={18} weight="light" /> Affected Moro feature and account context</li>
+          <li><CheckCircle size={18} weight="light" /> iOS version and device model</li>
+          <li><CheckCircle size={18} weight="light" /> Reproduction steps using test data</li>
+          <li><CheckCircle size={18} weight="light" /> Expected impact and any suggested mitigation</li>
         </ul>
       </section>
 
-      <section className="trust-section-heading response-heading">
-        <p className="section-kicker">Coordinated response</p>
-        <h2>What happens after you report.</h2>
-      </section>
-      <ol className="response-steps">
-        <li><strong>Acknowledgement</strong><span>We aim to acknowledge a complete report within three business days.</span></li>
-        <li><strong>Triage</strong><span>We verify scope and impact, then keep the reporter informed as the investigation progresses.</span></li>
-        <li><strong>Resolution</strong><span>We coordinate a fix and public notice when disclosure helps users update safely.</span></li>
+      <SectionHead label="Coordinated response" title="What happens after you report." />
+      <ol className="s-steps">
+        <li><span>01</span><strong>Acknowledgement</strong><p>We aim to acknowledge a complete report within three business days.</p></li>
+        <li><span>02</span><strong>Triage</strong><p>We verify scope and impact, then keep the reporter informed as the investigation progresses.</p></li>
+        <li><span>03</span><strong>Resolution</strong><p>We coordinate a fix and public notice when disclosure helps users update safely.</p></li>
       </ol>
     </TrustLayout>
   );
@@ -975,46 +431,45 @@ function LicensesPage() {
     { name: "Phosphor Icons", version: "2.1.10", area: "Moro website", license: "MIT", href: "https://github.com/phosphor-icons/react/blob/v2.1.10/LICENSE" },
     { name: "Partytown", version: "0.14.0", area: "Optional website analytics", license: "MIT", href: "https://github.com/QwikDev/partytown/blob/main/LICENSE" },
     { name: "Inter", version: "5.2.8 package", area: "Website typography", license: "SIL OFL 1.1", href: "https://github.com/rsms/inter/blob/master/LICENSE.txt" },
-    { name: "Newsreader", version: "5.2.10 package", area: "Website typography", license: "SIL OFL 1.1", href: "https://github.com/productiontype/Newsreader/blob/master/OFL.txt" },
     { name: "Vite React plugin", version: "5.0.4", area: "Website build tooling", license: "MIT", href: "https://github.com/vitejs/vite-plugin-react/blob/plugin-react%405.0.4/LICENSE" },
     { name: "Vite", version: "6.4.3", area: "Website build tooling", license: "MIT", href: "https://github.com/vitejs/vite/blob/v6.4.3/LICENSE" },
   ];
 
   return (
     <TrustLayout
-      icon={Package}
       title="Third-party software"
       description="Moro keeps its own source private while respecting the separate licenses of the software and fonts it uses."
       updated="August 19, 2026"
     >
-      <section className="trust-panel license-intro">
-        <p className="section-kicker">Licensing boundary</p>
+      <section className="s-panel s-panel--wide">
+        <p className="s-label">Licensing boundary</p>
         <h2>Publicly visible does not mean open source.</h2>
         <p>The Moro application and original website code and content are proprietary unless a file says otherwise. Public visibility of the website repository provides transparency; third-party components remain available under their own licenses.</p>
       </section>
 
-      <section className="license-list" aria-label="Direct third-party components">
-        {components.map((component) => (
-          <article key={component.name}>
-            <div>
-              <p>{component.area}</p>
-              <h2>{component.name}</h2>
-              <span>{component.version}</span>
-            </div>
-            <a href={component.href} target="_blank" rel="noreferrer">
-              {component.license} <ArrowSquareOut size={16} />
-            </a>
-          </article>
+      <div className="s-table" role="table" aria-label="Direct third-party components">
+        <div className="s-table-row s-table-row--head" role="row">
+          <span role="columnheader">Component</span>
+          <span role="columnheader">Used in</span>
+          <span role="columnheader">Version</span>
+          <span role="columnheader">License</span>
+        </div>
+        {components.map((c) => (
+          <div className="s-table-row" role="row" key={c.name}>
+            <strong role="cell">{c.name}</strong>
+            <span role="cell">{c.area}</span>
+            <span role="cell" className="s-mono">{c.version}</span>
+            <a role="cell" href={c.href} target="_blank" rel="noreferrer">{c.license} <ArrowSquareOut size={13} /></a>
+          </div>
         ))}
-      </section>
+      </div>
 
-      <p className="license-note">This page lists direct product and website dependencies. Transitive dependencies and platform frameworks may carry additional notices in their distributions.</p>
+      <p className="s-footnote">This page lists direct product and website dependencies. Transitive dependencies and platform frameworks may carry additional notices in their distributions.</p>
     </TrustLayout>
   );
 }
 
 function SupportPage() {
-  useEffect(() => setPageMetadata("Support — Moro", "Support, privacy, and legal information for Moro."), []);
   const links = [
     { icon: EnvelopeSimple, title: "Contact support", copy: "We’ll help with accounts, notifications, or unexpected behaviour.", href: "mailto:support@somincola.com", label: "support@somincola.com", analyticsEvent: ANALYTICS_EVENTS.supportContactClick },
     { icon: ShieldCheck, title: "Privacy policy", copy: "See what Moro handles on-device, through your server, and for push notifications.", href: "/privacy", label: "Read privacy policy" },
@@ -1022,54 +477,59 @@ function SupportPage() {
     { icon: FileText, title: "Terms of use", copy: "Understand the terms that apply when you download and use Moro.", href: "/terms", label: "Read terms" },
   ];
   return (
-    <>
-      <Header />
-      <main className="support-shell">
-        <section className="support-intro">
-          <div className="support-icon"><img src="/assets/moro-app-icon.png" alt="Moro app icon" /></div>
-          <p className="section-kicker">Moro support</p>
-          <h1>How can we help?</h1>
-          <p>Tell us what happened, what you were trying to do, and which server you use. Please never email your password or access token.</p>
-        </section>
-        <section className="support-grid" aria-label="Support options">
-          {links.map(({ icon: Icon, title, copy, href, label, analyticsEvent }) => (
+    <SubShell>
+      <PageHead
+        icon
+        eyebrow="Support"
+        title="How can we help?"
+        intro="Tell us what happened, what you were trying to do, and which server you use. Please never email your password or access token."
+      />
+      <div className="s-wrap s-support">
+        <section className="s-cards" aria-label="Support options">
+          {links.map(({ icon: Icon, title, copy, href, label, analyticsEvent }, index) => (
             <a
-              className="support-card"
+              className={`s-card ${index === 0 ? "s-card--primary" : ""}`}
               href={href}
               key={title}
-              onClick={() => analyticsEvent && trackEvent(analyticsEvent, {
-                cta_location: "support_card",
-                link_url: href,
-              })}
+              onClick={() => analyticsEvent && trackEvent(analyticsEvent, { cta_location: "support_card", link_url: href })}
             >
-              <span className="support-card-icon"><Icon size={28} /></span>
-              <div><h2>{title}</h2><p>{copy}</p><span className="support-card-link">{label} <ArrowRight size={17} /></span></div>
+              <Icon size={24} weight="light" />
+              <h2>{title}</h2>
+              <p>{copy}</p>
+              <span className="s-card-link">{label} <ArrowRight size={14} /></span>
             </a>
           ))}
         </section>
-        <aside className="support-note"><PaperPlaneTilt size={24} /><p><strong>Response time</strong><br />We aim to respond to support email within three business days.</p></aside>
-      </main>
-      <Footer />
-    </>
+        <aside className="s-aside">
+          <PaperPlaneTilt size={20} weight="light" />
+          <p><strong>Response time.</strong> We aim to respond to support email within three business days.</p>
+        </aside>
+      </div>
+    </SubShell>
   );
 }
 
 function NotFoundPage() {
-  useEffect(() => setPageMetadata("Page not found — Moro", "The requested Moro page could not be found."), []);
   return (
-    <>
-      <Header />
-      <main className="not-found"><img src="/assets/moro-app-icon.png" alt="" /><p className="section-kicker">404</p><h1>This page wandered off.</h1><p>Let’s take you back to a calmer part of the fediverse.</p><a className="primary-link" href="/">Return home <ArrowRight size={18} /></a></main>
-      <Footer />
-    </>
+    <SubShell className="m-sub--center">
+      <section className="s-missing">
+        <img src="/assets/moro-icon-192.png" alt="" width="72" height="72" />
+        <p className="s-eyebrow">404</p>
+        <h1>This page wandered off.</h1>
+        <p>Let’s take you back to a calmer part of the fediverse.</p>
+        <a className="s-button" href="/">Return home <ArrowRight size={15} /></a>
+      </section>
+    </SubShell>
   );
 }
 
-export function App() {
-  const path = useMemo(() => {
-    const clean = window.location.pathname.replace(/\/+$/, "");
-    return clean || "/";
-  }, []);
+export function App({ path: rawPath = "/" }) {
+  const path = normalizePath(rawPath);
+  useEffect(() => { setPageMetadata(metaFor(path), path); }, [path]);
+  return <PathContext.Provider value={path}><Route path={path} /></PathContext.Provider>;
+}
+
+function Route({ path }) {
   if (path === "/") return <HomePage />;
   if (path === "/privacy") return <PrivacyPage />;
   if (path === "/terms") return <TermsPage />;

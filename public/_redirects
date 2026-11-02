@@ -1,1 +1,3 @@
-/* /index.html 200
+# Every route is prerendered to its own HTML file (see scripts/prerender.mjs),
+# and unknown paths are answered by 404.html. No SPA catch-all is needed.
+/index.html  /  301
