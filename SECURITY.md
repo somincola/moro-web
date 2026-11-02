@@ -9,4 +9,4 @@ not include a real password or access token, and do not publish vulnerability
 details in a GitHub issue before a fix is available.
 
 The full reporting policy and project security scope are published at
-<https://moro.somincola.com/security>.
+<https://getmoro.app/security>.

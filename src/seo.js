@@ -1,7 +1,7 @@
 /* Single source of truth for page metadata — used by the client (on route
    render) and by scripts/prerender.mjs (baked into each static HTML file). */
 
-export const SITE_URL = "https://moro.somincola.com";
+export const SITE_URL = "https://getmoro.app";
 export const APP_STORE_ID = "6776115614";
 export const OG_IMAGE = `${SITE_URL}/assets/og-image.png?v=2`;
 

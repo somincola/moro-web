@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://moro.somincola.com/</loc><lastmod>2026-11-02</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://moro.somincola.com/support</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://moro.somincola.com/transparency</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://moro.somincola.com/privacy</loc><lastmod>2026-11-02</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://moro.somincola.com/security</loc><lastmod>2026-11-02</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://moro.somincola.com/terms</loc><lastmod>2026-11-02</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://moro.somincola.com/licenses</loc><lastmod>2026-11-02</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://getmoro.app/</loc><lastmod>2026-11-02</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://getmoro.app/support</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://getmoro.app/transparency</loc><lastmod>2026-11-02</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://getmoro.app/privacy</loc><lastmod>2026-11-02</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://getmoro.app/security</loc><lastmod>2026-11-02</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://getmoro.app/terms</loc><lastmod>2026-11-02</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://getmoro.app/licenses</loc><lastmod>2026-11-02</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

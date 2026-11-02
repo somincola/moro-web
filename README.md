@@ -2,7 +2,7 @@
 
 Marketing, download, support, and public trust site for the Moro iOS Mastodon client.
 
-Production URL: `https://moro.somincola.com`
+Production URL: `https://getmoro.app` (the former `moro.somincola.com` should 301-redirect here)
 
 ## Routes
 
@@ -61,7 +61,7 @@ Use a dedicated Pages project for this repository so the app site can deploy ind
 - Build output directory: `dist`
 - Production branch: `main`
 - Optional environment override: `VITE_APP_STORE_URL`
-- Custom domain: `moro.somincola.com`
+- Custom domain: `getmoro.app` (keep `moro.somincola.com` attached only to redirect to it)
 
 The `somincola.com` zone can continue serving the company website while the `moro` subdomain points at this separate Pages project. The Somincola Garden Mastodon server and its web identity remain under `somincola.org`.
 
