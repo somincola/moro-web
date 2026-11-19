@@ -1,25 +1,21 @@
-import React from "react";
-import { createRoot, hydrateRoot } from "react-dom/client";
 import "@fontsource-variable/inter";
-import { AnalyticsManager } from "./AnalyticsManager.jsx";
-import { App } from "./App.jsx";
 import "./styles.css";
+import "./home/home.css";
+import "./analytics.css";
+import { enhanceNavigation, enhanceReveals, enhanceParticles, enhanceTableOfContents } from "./enhance.js";
+import { initAnalyticsConsent } from "./analytics.js";
 
-const container = document.getElementById("root");
-const app = (
-  <React.StrictMode>
-    <App path={window.location.pathname} />
-  </React.StrictMode>
-);
+async function start() {
+  // Production already contains the entire page. React is only a build-time
+  // renderer; no runtime, virtual DOM or hydration is sent to visitors.
+  if (document.querySelector(".m-sub") && !document.querySelector("[data-subpage-styles]")) {
+    await import("./home/subpages.css");
+  }
+  enhanceNavigation();
+  enhanceReveals();
+  enhanceParticles();
+  enhanceTableOfContents();
+  initAnalyticsConsent();
+}
 
-// Pages are prerendered at build time; hydrate them. Fall back to a client
-// render for the dev server, where #root starts empty.
-if (container.hasChildNodes()) hydrateRoot(container, app);
-else createRoot(container).render(app);
-
-// The consent banner is client-only, so it lives in its own root and never
-// affects hydration of the prerendered page.
-const consentRoot = document.createElement("div");
-consentRoot.id = "consent-root";
-document.body.appendChild(consentRoot);
-createRoot(consentRoot).render(<AnalyticsManager />);
+start();

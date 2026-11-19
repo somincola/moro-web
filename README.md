@@ -6,7 +6,7 @@ Production URL: `https://getmoro.app` (the former `moro.somincola.com` should 30
 
 ## Routes
 
-- `/` — marketing page and interactive fictional timeline preview
+- `/` — marketing page, interactive particle globe and responsive App Store screenshots
 - `/privacy` — Moro privacy policy
 - `/security` — private vulnerability reporting policy and project scope
 - `/transparency` — plain-language App, push, and website data flows
@@ -15,7 +15,7 @@ Production URL: `https://getmoro.app` (the former `moro.somincola.com` should 30
 - `/support` — support and contact links
 - `/.well-known/security.txt` — machine-readable security contact
 
-Cloudflare Pages rewrites direct requests to `index.html` through `public/_redirects`, while React selects the matching route.
+Cloudflare Pages serves a prerendered HTML file for each route and returns the dedicated 404 page for unknown paths.
 
 ## Development
 
@@ -23,6 +23,7 @@ Cloudflare Pages rewrites direct requests to `index.html` through `public/_redir
 pnpm install
 pnpm dev
 pnpm build
+pnpm check
 ```
 
 The production bundle is emitted to `dist/`.
@@ -33,14 +34,41 @@ The production bundle is emitted to `dist/`.
 `src/entry-server.jsx`, and `scripts/prerender.mjs`, which writes a fully
 rendered HTML file per route (`dist/index.html`, `dist/privacy.html`, …,
 `dist/404.html`) with its own title, description, canonical URL and social
-tags. The client hydrates that markup. Page metadata lives in `src/seo.js`;
+tags. React runs only in the build renderer: visitors receive static HTML and
+small progressive enhancements in `src/enhance.js`, with no React runtime or
+hydration. Vite uses the same renderer in development. Page metadata lives in `src/seo.js`;
 add new routes there and in `App.jsx`.
 
-- Hashed bundles are emitted to `/_app/` and cached immutably (`public/_headers`).
+- Hashed bundles (`/_app/`) and optimized images (`/_media/`) are cached for one year with `immutable` (`public/_headers`). HTML keeps Pages' revalidation defaults.
+- The particle code loads after paint when a scene is near the viewport. Footer scenes are not initialized at page startup; touch devices idle at 30fps and offscreen scenes pause.
+- Initial text is visible without JavaScript. Only below-the-fold elements get a brief reveal animation.
+- Each page includes structured WebPage data; the homepage describes the iOS app and its screenshots. Subpages include breadcrumbs. Exact JSON-LD hashes are added to the script CSP during the build.
+- The sitemap is generated from `ROUTES` and includes screenshot URLs. Pages preview domains are marked `noindex`.
 - There is no SPA catch-all in `public/_redirects`; unknown paths get `404.html`.
 - `public/assets/og-image.png` is a 1200×630 capture of the homepage hero.
-- Homepage screenshots ship at 480/600/720 px (`srcset`); regenerate all three
-  sizes from moro-ios `screenshots/app-store/en-US/iphone/` when the UI changes.
+- Homepage screenshots use `<picture>` with AVIF and WebP fallback at 320/480/600/720 px, native lazy loading, automatic rendered sizes with responsive fallbacks, asynchronous decoding and reserved aspect ratios.
+
+### Updating images
+
+Keep the canonical WebP screenshots in `public/assets/app/` aligned with the
+approved App Store captures from moro-ios `screenshots/app-store/en-US/iphone/`.
+After changing those source images, run:
+
+```bash
+pnpm images:optimize
+pnpm build
+pnpm check
+```
+
+Commit the generated files in `public/_media/` and
+`src/home/images.generated.js`. Their content hashes change only when the image
+bytes change, so CDN/browser caching is safe. Normal builds reuse these files
+without re-encoding images. The same-origin Cloudflare Pages CDN serves them;
+no separate image host or extra cross-origin connection is required.
+
+`pnpm check` verifies the deployable routes, local asset references, image
+dimensions and aspect ratios, crawlable navigation, structured data/CSP,
+sitemap, 404 indexing, and a 20KB limit on initial JavaScript.
 
 ## App Store URL
 

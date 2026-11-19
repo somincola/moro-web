@@ -122,6 +122,7 @@ const GATHER = 2.4; // s
 
 export function createParticleGlobe(canvas, options = {}) {
   const ctx = canvas.getContext("2d");
+  if (!ctx) return () => {};
   const ink = options.ink || "255,255,255";
   const reduced = Boolean(options.reducedMotion);
   const layout = options.layout || ((w, h) => ({ cx: w / 2, cy: h * 0.42, r: Math.min(w * 0.42, h * 0.3) }));
@@ -407,7 +408,17 @@ export function createParticleGlobe(canvas, options = {}) {
   let cost = 8;
   let skip = 0;
   let frame = 0;
+  let lastFrame = 0;
+  // A quiet decorative scene needs only 30fps on touch devices. Dragging
+  // remains responsive, and the existing adaptive detail still limits cost.
+  const interval = window.matchMedia("(pointer: coarse)").matches ? 1000 / 30 : 1000 / 60;
   function loop(now) {
+    const pace = drag ? 1000 / 60 : interval;
+    if (now - lastFrame < pace - 1) {
+      raf = running ? requestAnimationFrame(loop) : 0;
+      return;
+    }
+    lastFrame = now;
     frame += 1;
     if (frame % (skip + 1) === 0) {
       const t0 = performance.now();

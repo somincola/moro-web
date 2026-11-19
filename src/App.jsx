@@ -1,4 +1,4 @@
-import { createContext, Fragment, useContext, useEffect, useRef, useState } from "react";
+import { Children, cloneElement, createContext, Fragment, isValidElement, useContext } from "react";
 import {
   ArrowRight,
   ArrowSquareOut,
@@ -21,15 +21,11 @@ import {
   ShieldCheck,
   X,
 } from "@phosphor-icons/react";
-import {
-  ANALYTICS_EVENTS,
-  ANALYTICS_PREFERENCES_EVENT,
-  hasAnalyticsConsent,
-  trackEvent,
-} from "./analytics.js";
+import { ANALYTICS_EVENTS } from "./analytics.js";
+import { AnalyticsConsent } from "./AnalyticsConsent.jsx";
 import { LuxHomePage, SiteFooter, SiteHeader } from "./home/HomePage.jsx";
-import "./home/subpages.css";
-import { metaFor, normalizePath, SITE_URL } from "./seo.js";
+import { images } from "./home/images.generated.js";
+import { normalizePath } from "./seo.js";
 
 const PathContext = createContext("/");
 
@@ -42,26 +38,6 @@ const trustNavigation = [
   { href: "/security", label: "Security" },
   { href: "/licenses", label: "Licenses" },
 ];
-
-function setPageMetadata({ title, description }, path) {
-  document.title = title;
-  const meta = document.querySelector('meta[name="description"]');
-  if (meta) meta.setAttribute("content", description);
-
-  const canonicalURL = new URL(path, SITE_URL).toString();
-  const canonical = document.querySelector('link[rel="canonical"]');
-  if (canonical) canonical.setAttribute("href", canonicalURL);
-
-  const metadata = [
-    ['meta[property="og:title"]', "content", title],
-    ['meta[property="og:description"]', "content", description],
-    ['meta[property="og:url"]', "content", canonicalURL],
-  ];
-  metadata.forEach(([selector, attribute, value]) => {
-    const element = document.querySelector(selector);
-    if (element) element.setAttribute(attribute, value);
-  });
-}
 
 function HomePage() {
   return <LuxHomePage />;
@@ -83,7 +59,7 @@ function PageHead({ eyebrow, title, intro, meta, icon = false, children }) {
   return (
     <header className="s-head">
       <div className="s-wrap">
-        {icon ? <img className="s-head-icon" src="/assets/moro-icon-192.png" alt="" width="56" height="56" /> : null}
+        {icon ? <img className="s-head-icon" src={images.icon} alt="" width="56" height="56" /> : null}
         <p className="s-eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         {intro ? <p className="s-intro">{intro}</p> : null}
@@ -97,24 +73,14 @@ function PageHead({ eyebrow, title, intro, meta, icon = false, children }) {
 const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 function LegalLayout({ title, description, updated, children }) {
-  const bodyRef = useRef(null);
-  const [toc, setToc] = useState([]);
-  const [active, setActive] = useState("");
-
-  useEffect(() => {
-    const body = bodyRef.current;
-    if (!body) return undefined;
-    const headings = [...body.querySelectorAll("h2")];
-    headings.forEach((h, i) => { h.id = slugify(h.textContent) || `section-${i + 1}`; });
-    setToc(headings.map((h) => ({ id: h.id, label: h.textContent })));
-    if (headings[0]) setActive(headings[0].id);
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-      if (visible[0]) setActive(visible[0].target.id);
-    }, { rootMargin: "-80px 0px -65% 0px" });
-    headings.forEach((h) => observer.observe(h));
-    return () => observer.disconnect();
-  }, []);
+  const toc = [];
+  const content = Children.map(children, (child) => {
+    if (!isValidElement(child) || child.type !== "h2") return child;
+    const label = child.props.children;
+    const id = slugify(label) || `section-${toc.length + 1}`;
+    toc.push({ id, label });
+    return cloneElement(child, { id });
+  });
 
   return (
     <SubShell>
@@ -122,11 +88,11 @@ function LegalLayout({ title, description, updated, children }) {
       <div className="s-wrap s-doc-grid">
         <nav className="s-toc" aria-label="On this page">
           <p>On this page</p>
-          {toc.map((item) => (
-            <a key={item.id} href={`#${item.id}`} className={active === item.id ? "is-active" : undefined}>{item.label}</a>
+          {toc.map((item, index) => (
+            <a key={item.id} href={`#${item.id}`} className={index === 0 ? "is-active" : undefined}>{item.label}</a>
           ))}
         </nav>
-        <article className="s-doc" ref={bodyRef}>{children}</article>
+        <article className="s-doc">{content}</article>
       </div>
     </SubShell>
   );
@@ -491,7 +457,7 @@ function SupportPage() {
               className={`s-card ${index === 0 ? "s-card--primary" : ""}`}
               href={href}
               key={title}
-              onClick={() => analyticsEvent && trackEvent(analyticsEvent, { cta_location: "support_card", link_url: href })}
+              data-analytics-event={analyticsEvent}
             >
               <Icon size={24} weight="light" />
               <h2>{title}</h2>
@@ -513,7 +479,7 @@ function NotFoundPage() {
   return (
     <SubShell className="m-sub--center">
       <section className="s-missing">
-        <img src="/assets/moro-icon-192.png" alt="" width="72" height="72" />
+        <img src={images.icon} alt="" width="72" height="72" />
         <p className="s-eyebrow">404</p>
         <h1>This page wandered off.</h1>
         <p>Let’s take you back to a calmer part of the fediverse.</p>
@@ -525,8 +491,7 @@ function NotFoundPage() {
 
 export function App({ path: rawPath = "/" }) {
   const path = normalizePath(rawPath);
-  useEffect(() => { setPageMetadata(metaFor(path), path); }, [path]);
-  return <PathContext.Provider value={path}><Route path={path} /></PathContext.Provider>;
+  return <PathContext.Provider value={path}><Route path={path} /><AnalyticsConsent /></PathContext.Provider>;
 }
 
 function Route({ path }) {
