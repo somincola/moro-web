@@ -24,6 +24,8 @@ const { render, ROUTES, NOT_FOUND, SITE_URL, APP_STORE_ID, OG_IMAGE, GA_MEASUREM
 
 const template = readFileSync(join(dist, "index.html"), "utf8");
 const manifest = JSON.parse(readFileSync(join(dist, ".vite", "manifest.json"), "utf8"));
+const mainCSS = manifest["index.html"]?.css;
+if (!mainCSS?.length) throw new Error("prerender: missing main stylesheet");
 const subpageCSS = manifest["src/home/subpages.css"]?.file;
 if (!subpageCSS) throw new Error("prerender: missing subpage stylesheet");
 const scriptHashes = new Set();
@@ -79,6 +81,14 @@ function page(path, meta, { indexable = true } = {}) {
     html = html.replace(pattern, replacement);
   };
 
+  // The complete shared stylesheet is only ~4KB gzip. Sending it with the
+  // document removes a render-blocking round trip on distant/mobile networks.
+  for (const file of mainCSS) {
+    const escaped = file.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const css = readFileSync(join(dist, file), "utf8").replace(/<\/style/gi, "<\\/style");
+    set(new RegExp(`<link[^>]+href="/${escaped}"[^>]*>`), () => `<style data-site-styles>${css}</style>`);
+  }
+
   set(/<title>[^<]*<\/title>/, `<title>${escapeText(meta.title)}</title>`);
   set(/(<meta name="description" content=")[^"]*(")/, `$1${escapeAttr(meta.description)}$2`);
   set(/(<meta property="og:title" content=")[^"]*(")/, `$1${escapeAttr(meta.title)}$2`);
@@ -97,7 +107,10 @@ function page(path, meta, { indexable = true } = {}) {
   if (path !== "/") set(/(<meta name="theme-color" content=")[^"]*(")/, "$1#ffffff$2");
 
   const extraHead = [fontPreload];
-  if (path !== "/") extraHead.push(`<link rel="stylesheet" href="/${subpageCSS}" data-subpage-styles />`);
+  if (path !== "/") {
+    const css = readFileSync(join(dist, subpageCSS), "utf8").replace(/<\/style/gi, "<\\/style");
+    extraHead.push(`<style data-subpage-styles>${css}</style>`);
+  }
   if (indexable) {
     const json = structuredData(path, meta);
     scriptHashes.add(`'sha256-${createHash("sha256").update(json).digest("base64")}'`);

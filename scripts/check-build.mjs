@@ -24,7 +24,9 @@ for (const [path, meta] of Object.entries(ROUTES)) {
   assert(html.includes(`<link rel="canonical" href="${new URL(path, SITE_URL).href}"`), `${path}: canonical`);
   assert.equal((html.match(/<h1\b/g) || []).length, 1, `${path}: exactly one rendered heading`);
   assert(html.includes("max-image-preview:large"), `${path}: image previews`);
-  assert(!html.includes("is-pending"), `${path}: content cannot be hidden until JavaScript runs`);
+  assert(html.includes("<style data-site-styles>"), `${path}: initial styling must not wait for an external stylesheet`);
+  assert(!/<link\b[^>]*rel="stylesheet"/.test(html), `${path}: render-blocking stylesheet`);
+  assert(!/\bclass="[^"]*\bis-pending\b/.test(html), `${path}: content cannot be hidden until JavaScript runs`);
   if (path !== "/") assert(html.includes("data-subpage-styles"), `${path}: subpage CSS available without JS`);
   const json = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
   assert(json, `${path}: structured data`);

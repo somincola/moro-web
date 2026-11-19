@@ -42,6 +42,7 @@ add new routes there and in `App.jsx`.
 - Hashed bundles (`/_app/`) and optimized images (`/_media/`) are cached for one year with `immutable` (`public/_headers`). HTML keeps Pages' revalidation defaults.
 - The particle code loads after paint when a scene is near the viewport. Footer scenes are not initialized at page startup; touch devices idle at 30fps and offscreen scenes pause.
 - Initial text is visible without JavaScript. Only below-the-fold elements get a brief reveal animation.
+- The small shared stylesheet is inlined into the HTML; subpage styles are included only on their pages. Initial rendering needs no external CSS request.
 - Each page includes structured WebPage data; the homepage describes the iOS app and its screenshots. Subpages include breadcrumbs. Exact JSON-LD hashes are added to the script CSP during the build.
 - The sitemap is generated from `ROUTES` and includes screenshot URLs. Pages preview domains are marked `noindex`.
 - There is no SPA catch-all in `public/_redirects`; unknown paths get `404.html`.
