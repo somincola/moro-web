@@ -53,8 +53,8 @@ export const screenshots = {
 };
 
 export const images = {
-  "brand": "/_media/brand-6970739572fa.webp",
-  "icon": "/_media/icon-e44c37bbbb77.webp",
+  "brand": "/_media/brand-3b8ea409b45d.webp",
+  "icon": "/_media/icon-1b282c3141ae.webp",
   "storeBadge": "/_media/storeBadge-48f1bc4244cb.webp",
   "qrCode": "/_media/qrCode-8af4aecd5fb6.webp"
 };

@@ -96,7 +96,7 @@ The `somincola.com` zone can continue serving the company website while the `mor
 
 ## Brand and content
 
-- `public/assets/moro-app-icon.png` is the canonical AppIconClassic mark.
+- `public/assets/moro-app-icon.png` is the default 1024 px iOS app icon from `AppIcon.appiconset`.
 - The site has one fixed navy/ivory system; no theme or accent-color picker is included.
 - Timeline accounts and posts are fictional.
 - Photography is stored locally and documented in `ASSET_CREDITS.md`.

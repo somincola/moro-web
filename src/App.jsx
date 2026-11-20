@@ -100,8 +100,8 @@ function LegalLayout({ title, description, updated, children }) {
 
 function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy" description="Privacy policy for Moro, a Mastodon client for iPhone." updated="August 19, 2026">
-      <p>Moro (“the App”) is a third-party client for Mastodon and the fediverse, developed by <strong>somincola llc</strong> (“we”, “us”, “our”). This policy explains what information the App handles and where it goes.</p>
+    <LegalLayout title="Privacy Policy" description="Privacy policy for Moro, a Mastodon client for iPhone." updated="November 20, 2026">
+      <p>Moro (“the App”) is a third-party client for Mastodon and the fediverse, developed by <strong>somincola llc</strong> (“we”, “us”, “our”). This policy explains how we handle information when you use the App, visit this website, or tip Moro through Ko-fi.</p>
       <p>For a plain-language view of each service boundary, see the <a href="/transparency">Moro transparency page</a>.</p>
 
       <h2>The short version</h2>
@@ -141,6 +141,10 @@ function PrivacyPage() {
       <h2>In-app purchases</h2>
       <p>If Moro offers optional purchases or tips, Apple processes payment. We do not receive or store your full payment-card details.</p>
 
+      <h2>Tips through Ko-fi</h2>
+      <p>When you tip Moro on Ko-fi, Ko-fi shares your display name, email address, tip amount and any message you leave with Somincola LLC. Stripe processes card payments. We use the payment reference and transaction details to keep accounting records, answer questions and handle refunds.</p>
+      <p>Read how each service handles your information in the <a href="https://more.ko-fi.com/privacy">Ko-fi privacy policy</a> and the <a href="https://stripe.com/privacy">Stripe privacy policy</a>.</p>
+
       <h2>Data retention and your choices</h2>
       <ul>
         <li>Remove an account to delete its stored access token and session credentials from the App’s Keychain records.</li>
@@ -163,7 +167,7 @@ function PrivacyPage() {
 
 function TermsPage() {
   return (
-    <LegalLayout title="Terms of Use" description="Terms of use for Moro, a Mastodon client for iPhone." updated="July 14, 2026">
+    <LegalLayout title="Terms of Use" description="Terms of use for Moro, a Mastodon client for iPhone." updated="November 20, 2026">
       <p>These Terms of Use (“Terms”) govern your use of <strong>Moro</strong> (“the App”), a third-party client for Mastodon and the fediverse developed by <strong>somincola llc</strong> (“we”, “us”, “our”). By downloading or using Moro, you agree to these Terms. The App is also subject to <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">Apple’s Standard End User License Agreement</a>.</p>
 
       <h2>License</h2>
@@ -177,6 +181,9 @@ function TermsPage() {
 
       <h2>In-app purchases</h2>
       <p>Moro may offer optional in-app purchases or tips. Apple processes those transactions and handles refunds under its policies.</p>
+
+      <h2>Tips through Ko-fi</h2>
+      <p>Tips on <a href="https://ko-fi.com/somincola">Moro’s Ko-fi page</a> are voluntary and support the development of Moro. Somincola LLC receives card payments through Stripe. To ask about a payment or request a refund, email <a href="mailto:support@somincola.com">support@somincola.com</a> with the reference from your Ko-fi receipt.</p>
 
       <h2>Third-party services and content</h2>
       <p>Moro displays content and connects to services supplied by third parties. We are not responsible for third-party content, server outages, moderation decisions, or changes made by server operators.</p>
@@ -437,7 +444,7 @@ function LicensesPage() {
 
 function SupportPage() {
   const links = [
-    { icon: EnvelopeSimple, title: "Contact support", copy: "We’ll help with accounts, notifications, or unexpected behaviour.", href: "mailto:support@somincola.com", label: "support@somincola.com", analyticsEvent: ANALYTICS_EVENTS.supportContactClick },
+    { icon: EnvelopeSimple, title: "Contact support", copy: "Get help with the app or a Ko-fi payment. For a refund request, include the reference from your Ko-fi receipt.", href: "mailto:support@somincola.com", label: "support@somincola.com", analyticsEvent: ANALYTICS_EVENTS.supportContactClick },
     { icon: ShieldCheck, title: "Privacy policy", copy: "See what Moro handles on-device, through your server, and for push notifications.", href: "/privacy", label: "Read privacy policy" },
     { icon: Bug, title: "Security reports", copy: "Report a vulnerability privately and review the project’s security scope.", href: "/security", label: "Review security policy" },
     { icon: FileText, title: "Terms of use", copy: "Understand the terms that apply when you download and use Moro.", href: "/terms", label: "Read terms" },
@@ -448,7 +455,7 @@ function SupportPage() {
         icon
         eyebrow="Support"
         title="How can we help?"
-        intro="Tell us what happened, what you were trying to do, and which server you use. Please never email your password or access token."
+        intro="Tell us what happened. For app issues, include the Mastodon server you use. Please never email your password or access token."
       />
       <div className="s-wrap s-support">
         <section className="s-cards" aria-label="Support options">
